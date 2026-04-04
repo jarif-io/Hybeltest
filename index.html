@@ -2,73 +2,92 @@
 <html lang="no">
 <head>
 <meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Leiemarked Kristiansand – UiA / Sentrum</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-:root{--bg:#f5f4f0;--card:#fff;--border:rgba(0,0,0,.1);--text:#1a1a1a;--muted:#666;--accent:#BA7517;--accent-bg:#FAEEDA;--blue:#1a73e8;--green:#0f6e56;--red:#a32d2d;--radius:10px}
+:root{
+  --bg:#f0f4f8;
+  --card:#ffffff;
+  --border:rgba(99,120,150,.15);
+  --text:#1a2433;
+  --muted:#5a6a7e;
+  --accent:#1e6f5c;
+  --accent2:#2a9d8f;
+  --accent-bg:#e8f5f2;
+  --accent-dark:#154f42;
+  --blue:#2563eb;
+  --green:#15803d;
+  --red:#b91c1c;
+  --amber:#b45309;
+  --radius:12px;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 4px 12px rgba(0,0,0,.05);
+  --shadow-lg:0 4px 16px rgba(0,0,0,.1),0 1px 4px rgba(0,0,0,.06);
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
 .page{max-width:1400px;margin:0 auto;padding:24px 20px}
-h1{font-size:22px;font-weight:600;margin-bottom:4px}
+h1{font-size:24px;font-weight:700;margin-bottom:4px;letter-spacing:-.3px;color:var(--text)}
 .subtitle{color:var(--muted);font-size:13px;margin-bottom:8px}
 .meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
 .meta span{font-size:12px;background:#e8e6e0;padding:3px 10px;border-radius:20px;color:var(--muted)}
-.tabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:2px solid var(--border);padding-bottom:0}
-.tab{padding:10px 18px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s}
-.tab:hover{color:var(--text)}
-.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tabs{display:flex;gap:2px;margin-bottom:24px;border-bottom:2px solid var(--border);padding-bottom:0}
+.tab{padding:10px 20px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;border-radius:8px 8px 0 0}
+.tab:hover{color:var(--accent);background:var(--accent-bg)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
 .tab-content{display:none}
 .tab-content.active{display:block}
-.mine-banner{background:var(--accent-bg);border:1.5px solid var(--accent);border-radius:var(--radius);padding:16px 20px;margin-bottom:20px;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start}
+.mine-banner{background:linear-gradient(135deg,#e8f5f2 0%,#d1ede8 100%);border:1.5px solid var(--accent2);border-radius:var(--radius);padding:20px 24px;margin-bottom:24px;display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start;box-shadow:var(--shadow-lg)}
 @media(max-width:700px){.mine-banner{grid-template-columns:1fr}}
-.mine-banner h2{font-size:14px;font-weight:600;color:var(--accent);margin-bottom:10px}
+.mine-banner h2{font-size:15px;font-weight:700;color:var(--accent-dark);margin-bottom:12px;letter-spacing:-.2px}
 .mine-specs{display:flex;gap:8px;flex-wrap:wrap}
 .spec{background:#fff;border:1px solid rgba(186,117,23,.3);border-radius:6px;padding:5px 10px}
 .spec .lbl{font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:.03em}
 .spec .val{font-size:15px;font-weight:600}
-.verdict-box{background:var(--accent);color:#fff;border-radius:8px;padding:14px 18px;min-width:210px;text-align:center}
+.verdict-box{background:linear-gradient(145deg,var(--accent) 0%,var(--accent-dark) 100%);color:#fff;border-radius:12px;padding:18px 22px;min-width:220px;text-align:center;box-shadow:0 4px 20px rgba(21,79,66,.3)}
 .verdict-box .v-label{font-size:10px;opacity:.85;margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
-.verdict-box .v-price{font-size:24px;font-weight:700}
+.verdict-box .v-price{font-size:28px;font-weight:700;letter-spacing:-.5px}
 .verdict-box .v-sub{font-size:11px;opacity:.8;margin-top:4px}
 .delta{margin-top:8px;font-size:13px;color:#7a4f0a}
 .delta strong{color:var(--accent)}
 .metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px}
 @media(max-width:900px){.metrics{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:600px){.metrics{grid-template-columns:repeat(2,1fr)}}
-.metric{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px}
+.metric{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);transition:transform .15s}.metric:hover{transform:translateY(-1px)}
 .metric .m-lbl{font-size:11px;color:var(--muted);margin-bottom:3px}
 .metric .m-val{font-size:20px;font-weight:600}
 .metric .m-sub{font-size:11px;color:var(--muted);margin-top:2px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden;box-shadow:var(--shadow)}
 .card-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
 .card-header h3{font-size:14px;font-weight:600}
 .filters{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 .chip-group{display:flex;gap:5px;flex-wrap:wrap}
-.chip{padding:4px 10px;border-radius:20px;border:1px solid var(--border);font-size:12px;cursor:pointer;background:#fff;color:var(--muted);transition:all .15s}
-.chip:hover{border-color:var(--accent);color:var(--accent)}
-.chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.chip{padding:5px 12px;border-radius:20px;border:1px solid var(--border);font-size:12px;cursor:pointer;background:#fff;color:var(--muted);transition:all .15s;font-weight:500}
+.chip:hover{border-color:var(--accent2);color:var(--accent);background:var(--accent-bg)}
+.chip.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 6px rgba(30,111,92,.3)}
 .f-label{font-size:12px;color:var(--muted);white-space:nowrap}
 .sep{width:1px;height:18px;background:var(--border);flex-shrink:0}
 .table-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:13px}
-thead th{padding:9px 10px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;background:#faf9f7;border-bottom:1px solid var(--border);cursor:pointer;white-space:nowrap;user-select:none}
+thead th{padding:10px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;background:#f4f7fa;border-bottom:1px solid var(--border);cursor:pointer;white-space:nowrap;user-select:none}
 thead th:hover{color:var(--text)}
 thead th.sorted .sa{opacity:1}
 .sa{opacity:.3;margin-left:3px}
 tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
 tbody tr:last-child{border-bottom:none}
-tbody tr:hover{background:#faf9f7}
-tbody tr.mine{background:#fffaf3}
-tbody tr.mine:hover{background:#fff4e0}
+tbody tr:hover{background:#f0f7f5}
+tbody tr.mine{background:#eef8f5}
+tbody tr.mine:hover{background:#d8f0ea}
 td{padding:9px 10px;vertical-align:middle}
 .badge{display:inline-block;padding:2px 7px;border-radius:12px;font-size:11px;font-weight:500}
-.b-s{background:#e1f5ee;color:#085041}
-.b-l{background:#e6f1fb;color:#0c447c}
-.b-h{background:#eeedfe;color:#3c3489}
-.b-m{background:#faeeda;color:#633806;border:1px solid var(--accent)}
+.b-s{background:#d1fae5;color:#065f46}
+.b-l{background:#dbeafe;color:#1e40af}
+.b-h{background:#ede9fe;color:#5b21b6}
+.b-m{background:#d1fae5;color:#065f46;border:1.5px solid var(--accent)}
 .iy{color:var(--green);font-weight:500}
 .in{color:#bbb}
 .allin{font-weight:600}
@@ -81,7 +100,7 @@ td{padding:9px 10px;vertical-align:middle}
 .ml{font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.04em}
 .charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
 @media(max-width:900px){.charts-grid{grid-template-columns:1fr}}
-.cc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.cc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
 .cc h3{font-size:14px;font-weight:600;margin-bottom:3px}
 .cc .cn{font-size:12px;color:var(--muted);margin-bottom:12px}
 .cw{position:relative;height:260px}
@@ -96,13 +115,13 @@ td{padding:9px 10px;vertical-align:middle}
 .analysis h3{font-size:15px;font-weight:600;margin-bottom:12px}
 .ag{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 @media(max-width:800px){.ag{grid-template-columns:1fr}}
-.ab{border:1px solid var(--border);border-radius:8px;padding:12px}
+.ab{border:1px solid var(--border);border-radius:10px;padding:14px;transition:box-shadow .15s}.ab:hover{box-shadow:var(--shadow)}
 .ab h4{font-size:13px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:5px}
 .ab p{font-size:13px;color:var(--muted);line-height:1.6}
 .ai{width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
-.ig{background:#e1f5ee;color:var(--green)}
-.ia{background:#faeeda;color:var(--accent)}
-.ib{background:#e6f1fb;color:var(--blue)}
+.ig{background:#d1fae5;color:#065f46}
+.ia{background:#fef3c7;color:#92400e}
+.ib{background:#dbeafe;color:#1e40af}
 .tfoot-note{padding:9px 16px;font-size:12px;color:var(--muted);border-top:1px solid var(--border)}
 .history-table{width:100%;border-collapse:collapse;font-size:13px}
 .history-table th{padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);background:#faf9f7;border-bottom:1px solid var(--border)}
@@ -118,7 +137,7 @@ td{padding:9px 10px;vertical-align:middle}
 .btn-primary:hover{opacity:.9}
 .price-up{color:var(--green);font-size:11px}
 .price-down{color:var(--red);font-size:11px}
-footer{text-align:center;font-size:12px;color:var(--muted);padding:20px 0}
+footer{text-align:center;font-size:12px;color:var(--muted);padding:28px 0;border-top:1px solid var(--border);margin-top:8px}
 </style>
 </head>
 <body>
@@ -127,7 +146,7 @@ footer{text-align:center;font-size:12px;color:var(--muted);padding:20px 0}
 <h1>Leiemarkedsanalyse — Kristiansand (UiA / Sentrum)</h1>
 <p class="subtitle">Leiligheter og hybler til leie innen gangavstand til UiA og Kristiansand sentrum</p>
 <div class="meta">
-  <span>📅 Oppdatert 4. april 2026</span>
+  <span>📅 Oppdatert 5. april 2026</span>
   <span>🔍 finn.no + hybel.no</span>
   <span>📍 Lund · Gimlekollen · Tinnheia · Sentrum · 10 km radius · Lianplatå</span>
   <span>🏠 <span id="total-count">–</span> annonser analysert (10 km radius)</span>
@@ -147,16 +166,15 @@ footer{text-align:center;font-size:12px;color:var(--muted);padding:20px 0}
       <div class="spec"><div class="lbl">Møblert</div><div class="val" style="color:var(--green)">✓ Ja</div></div>
       <div class="spec"><div class="lbl">Strøm</div><div class="val" style="color:var(--green)">✓ inkl.</div></div>
       <div class="spec"><div class="lbl">Internett</div><div class="val" style="color:var(--green)">✓ inkl.</div></div>
-      <div class="spec" style="background:#faeeda"><div class="lbl">Nåværende leie</div><div class="val">14 000 kr</div></div>
+      <div class="spec" style="background:#faeeda"><div class="lbl">Ny leiepris</div><div class="val">16 000 kr</div></div>
     </div>
-    <p class="delta" style="margin-top:8px">Du leier ut <strong>1 500–3 000 kr under markedspris</strong> for tilsvarende møblerte objekter med strøm + internett inkludert. Bygd 1923, renovert 2015. Energimerke G — strøm inkludert i leien beskytter leietaker mot høye varmekostnader, noe som er et reelt pluss.</p>
+    <p class="delta" style="margin-top:8px">Prisjustert til <strong>16 000 kr/mnd</strong> basert på markedsanalyse. Bygd 1923, renovert 2015. Strøm + internett + møbler inkludert. Energimerke G — strøm inkludert beskytter leietaker mot høye varmekostnader.</p>
   </div>
   <div class="verdict-box">
-    <div class="v-label">Anbefalt markedspris</div>
-    <div class="v-price">15 500–17 000</div>
+    <div class="v-label">NY LEIEPRIS SATT</div>
+    <div class="v-price">16 000 kr</div>
     <div class="v-sub">kr/mnd · møblert, inkl. strøm + nett</div>
-    <div style="margin-top:8px;font-size:11px;opacity:.85">Beste estimat: 16 000 kr/mnd
-+24 000 kr/år vs. dagens pris</div>
+    <div style="margin-top:8px;font-size:11px;opacity:.85">+24 000 kr/år vs. tidligere 14 000 kr<br>Godt forankret i markedsdata</div>
   </div>
 </div>
 
@@ -339,6 +357,56 @@ footer{text-align:center;font-size:12px;color:var(--muted);padding:20px 0}
   </div>
 </div>
 
+
+<!-- PRISINTERVALL-SEKSJON -->
+<div style="background:linear-gradient(135deg,#e8f5f2 0%,#f0f9f7 100%);border:1.5px solid var(--accent2);border-radius:var(--radius);padding:22px 26px;margin-bottom:24px;box-shadow:var(--shadow-lg)">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+    <div style="width:36px;height:36px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">💰</div>
+    <div>
+      <div style="font-size:16px;font-weight:700;color:var(--accent-dark)">Anbefalt prisintervall</div>
+      <div style="font-size:12px;color:var(--muted)">Basert på markedsanalyse av 62 objekter innen 5 km radius</div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px">
+    <div style="background:rgba(255,255,255,.8);border-radius:10px;padding:14px;text-align:center;border:1px solid rgba(30,111,92,.15)">
+      <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Nedre grense</div>
+      <div style="font-size:22px;font-weight:700;color:var(--green)">15 000 kr</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:3px">Konkurransedyktig bunn</div>
+    </div>
+    <div style="background:var(--accent);border-radius:10px;padding:14px;text-align:center;box-shadow:0 4px 16px rgba(30,111,92,.25)">
+      <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">✓ Satt pris</div>
+      <div style="font-size:26px;font-weight:700;color:#fff">16 000 kr</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.8);margin-top:3px">Optimalt nivå</div>
+    </div>
+    <div style="background:rgba(255,255,255,.8);border-radius:10px;padding:14px;text-align:center;border:1px solid rgba(30,111,92,.15)">
+      <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Øvre grense</div>
+      <div style="font-size:22px;font-weight:700;color:var(--amber)">17 500 kr</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:3px">Krever perfekt stand.</div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+    <div>
+      <div style="font-size:13px;font-weight:600;color:var(--accent-dark);margin-bottom:8px">Hvorfor 15 000 er bunnen</div>
+      <ul style="font-size:13px;color:var(--muted);line-height:1.8;list-style:none;padding:0">
+        <li>→ Brinken 12 (sokkel, 55 m², 5 min UiA): 12 900 kr uten strøm → all-in ~15 000 kr</li>
+        <li>→ Under 15 000 kr gir ingen markedsbonus — etterspørselen er allerede god</li>
+        <li>→ Strøm + nett + møbler inkludert er verdt minst 2 500–3 500 kr vs. bare annonsert pris</li>
+      </ul>
+    </div>
+    <div>
+      <div style="font-size:13px;font-weight:600;color:var(--accent-dark);margin-bottom:8px">Hvorfor 17 500 er taket</div>
+      <ul style="font-size:13px;color:var(--muted);line-height:1.8;list-style:none;padding:0">
+        <li>→ Kjellerleiligheter prises 5–10% under tilsvarende etasjeleiligheter</li>
+        <li>→ Byggeår 1923 er en faktor — nyoppussede bygg (2020+) tar 18 000–20 000 kr</li>
+        <li>→ Over 17 500 kr reduseres søkermassen merkbart i studentmarkedet</li>
+      </ul>
+    </div>
+  </div>
+  <div style="margin-top:14px;padding:12px 14px;background:rgba(255,255,255,.7);border-radius:8px;border-left:3px solid var(--accent);font-size:13px;color:var(--text);line-height:1.7">
+    <strong>Konklusjon:</strong> 16 000 kr/mnd er det optimale punktet — under markedssnittet all-in for møblerte 2-roms (~19 000 kr), men klart over bunn. Kr/person blir <strong>8 000 kr</strong>, som er svært attraktivt for studenter og gir rask utleie til seriøse leietakere.
+  </div>
+</div>
+
 <div class="analysis">
   <h3>Vurdering og anbefaling</h3>
   <div class="ag">
@@ -365,7 +433,7 @@ footer{text-align:center;font-size:12px;color:var(--muted);padding:20px 0}
 // DATA
 // ============================================================
 const D = [
-  {mine:true, adr:'Tobienborgveien 5', type:'Sokkelleilighet', m2:55, sov:2, pris:14000, strom:true, nett:true, moblert:'Ja', parkering:'Ja', allin:14000, renovert:'2015 (bygd 1923)', beliggenhet:'Lund · 3 min buss', kilde:'–', url:'https://www.finn.no/realestate/homes/ad.html?finnkode=377158590', lat:58.1521778, lng:8.0171464},
+  {mine:true, adr:'Tobienborgveien 5', type:'Sokkelleilighet', m2:55, sov:2, pris:16000, strom:true, nett:true, moblert:'Ja', parkering:'Ja', allin:16000, renovert:'2015 (bygd 1923)', beliggenhet:'Lund · 3 min buss', kilde:'–', url:'https://www.finn.no/realestate/homes/ad.html?finnkode=377158590', lat:58.1521778, lng:8.0171464},
   {adr:'Brinken 12', type:'Sokkelleilighet', m2:55, sov:2, pris:12900, strom:false, nett:true, moblert:'Delvis', parkering:'Ja', allin:14900, renovert:'2020', beliggenhet:'Lund · 5 min UiA', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=444754409', lat:58.165534, lng:7.995175},
   {adr:'Dronningens Gate 24A', type:'Leilighet', m2:80, sov:2, pris:14000, strom:false, nett:false, moblert:'Delvis', parkering:'Nei', allin:16500, renovert:'–', beliggenhet:'Sentrum · 4. etg', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=451662621', lat:58.1451946, lng:7.9976936},
   {adr:'Flaten 16', type:'Leilighet', m2:60, sov:1, pris:13500, strom:false, nett:false, moblert:'Ja', parkering:'Ja', allin:16000, renovert:'2026', beliggenhet:'Lund · nær UiA', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=150387629', lat:58.1570759, lng:8.0042992},
@@ -640,7 +708,7 @@ function renderCharts(){
     data:{datasets:[
       {label:'Leilighet',data:leil.map(l=>({x:l.m2,y:l.allin,label:l.adr})),backgroundColor:'#1a73e888',pointRadius:8,pointHoverRadius:11},
       {label:'Sokkel/Hybel',data:sokk.map(l=>({x:l.m2,y:l.allin,label:l.adr})),backgroundColor:'#0f6e5688',pointRadius:8,pointHoverRadius:11},
-      {label:'Ditt',data:[{x:55,y:14000,label:'Ditt objekt'}],backgroundColor:'#BA7517',pointRadius:12,pointHoverRadius:14,pointStyle:'triangle'},
+      {label:'Ditt',data:[{x:55,y:16000,label:'Ditt objekt (16 000 kr)'}],backgroundColor:'#BA7517',pointRadius:12,pointHoverRadius:14,pointStyle:'triangle'},
       {label:'Anbefalt',data:[{x:55,y:16000,label:'Anbefalt: 16 000 kr'}],backgroundColor:'#3B6D11',pointRadius:12,pointHoverRadius:14,pointStyle:'triangle'},
     ]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw.label}: ${c.raw.y.toLocaleString('no')} kr · ${c.raw.x} m²`}}},

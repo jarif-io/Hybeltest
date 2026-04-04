@@ -5,144 +5,185 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Leiemarked Kristiansand – UiA / Sentrum</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-  :root {
-    --bg:#f5f4f0;--card:#fff;--border:rgba(0,0,0,.1);--text:#1a1a1a;--muted:#666;
-    --accent:#BA7517;--accent-bg:#FAEEDA;--blue:#1a73e8;--green:#0f6e56;--red:#a32d2d;--radius:10px;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
-  .page{max-width:1300px;margin:0 auto;padding:24px 20px}
-  .header{margin-bottom:24px}
-  .header h1{font-size:22px;font-weight:600;margin-bottom:4px}
-  .header p{color:var(--muted);font-size:13px}
-  .meta{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap}
-  .meta span{font-size:12px;background:#e8e6e0;padding:3px 10px;border-radius:20px;color:var(--muted)}
-  .mine-banner{background:var(--accent-bg);border:1.5px solid var(--accent);border-radius:var(--radius);padding:16px 20px;margin-bottom:20px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start}
-  @media(max-width:700px){.mine-banner{grid-template-columns:1fr}}
-  .mine-banner h2{font-size:15px;font-weight:600;color:var(--accent);margin-bottom:10px}
-  .mine-specs{display:flex;gap:10px;flex-wrap:wrap}
-  .spec{background:#fff;border:1px solid rgba(186,117,23,.3);border-radius:6px;padding:6px 12px}
-  .spec .lbl{font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:.03em}
-  .spec .val{font-size:16px;font-weight:600}
-  .verdict-box{background:var(--accent);color:#fff;border-radius:8px;padding:14px 18px;min-width:220px;text-align:center}
-  .verdict-box .v-label{font-size:11px;opacity:.85;margin-bottom:4px}
-  .verdict-box .v-price{font-size:26px;font-weight:700}
-  .verdict-box .v-sub{font-size:11px;opacity:.8;margin-top:4px}
-  .delta{margin-top:10px;font-size:13px;color:#7a4f0a}
-  .delta strong{color:var(--accent)}
-  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-  @media(max-width:700px){.metrics{grid-template-columns:repeat(2,1fr)}}
-  .metric{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
-  .metric .m-lbl{font-size:12px;color:var(--muted);margin-bottom:4px}
-  .metric .m-val{font-size:22px;font-weight:600}
-  .metric .m-sub{font-size:11px;color:var(--muted);margin-top:2px}
-  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden}
-  .card-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-  .card-header h3{font-size:14px;font-weight:600}
-  .card-header .note{font-size:12px;color:var(--muted)}
-  .filters{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;gap:16px;flex-wrap:wrap;align-items:center}
-  .chip-group{display:flex;gap:6px;flex-wrap:wrap}
-  .chip{padding:5px 12px;border-radius:20px;border:1px solid var(--border);font-size:12px;cursor:pointer;background:#fff;color:var(--muted);transition:all .15s}
-  .chip:hover{border-color:var(--accent);color:var(--accent)}
-  .chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-  .f-label{font-size:12px;color:var(--muted)}
-  .sep{width:1px;height:20px;background:var(--border)}
-  .table-wrap{overflow-x:auto}
-  table{width:100%;border-collapse:collapse;font-size:13px}
-  thead th{padding:10px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;background:#faf9f7;border-bottom:1px solid var(--border);cursor:pointer;white-space:nowrap;user-select:none}
-  thead th:hover{color:var(--text)}
-  thead th.sorted .sa{opacity:1}
-  .sa{opacity:.3;margin-left:3px}
-  tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
-  tbody tr:last-child{border-bottom:none}
-  tbody tr:hover{background:#faf9f7}
-  tbody tr.mine{background:#fffaf3}
-  tbody tr.mine:hover{background:#fff4e0}
-  td{padding:10px 12px;vertical-align:middle}
-  .badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:500}
-  .b-s{background:#e1f5ee;color:#085041}
-  .b-l{background:#e6f1fb;color:#0c447c}
-  .b-h{background:#eeedfe;color:#3c3489}
-  .b-m{background:#faeeda;color:#633806;border:1px solid var(--accent)}
-  .iy{color:var(--green);font-weight:500}
-  .in{color:#bbb}
-  .allin{font-weight:600}
-  .al-lo{color:var(--green)}
-  .al-mi{color:var(--accent)}
-  .al-hi{color:var(--red)}
-  .ktag{font-size:11px;padding:1px 7px;border-radius:10px;background:#f0eeea;color:var(--muted)}
-  .al{color:var(--blue);text-decoration:none;font-size:12px}
-  .al:hover{text-decoration:underline}
-  .ml{font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.04em}
-  .charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
-  @media(max-width:900px){.charts-grid{grid-template-columns:1fr}}
-  .cc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
-  .cc h3{font-size:14px;font-weight:600;margin-bottom:4px}
-  .cc .cn{font-size:12px;color:var(--muted);margin-bottom:14px}
-  .cw{position:relative;height:280px}
-  .legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px}
-  .li{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)}
-  .ld{width:10px;height:10px;border-radius:3px;flex-shrink:0}
-  .analysis{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:20px}
-  .analysis h3{font-size:15px;font-weight:600;margin-bottom:14px}
-  .ag{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-  @media(max-width:800px){.ag{grid-template-columns:1fr}}
-  .ab{border:1px solid var(--border);border-radius:8px;padding:14px}
-  .ab h4{font-size:13px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-  .ab p{font-size:13px;color:var(--muted);line-height:1.6}
-  .ai{width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px}
-  .ig{background:#e1f5ee;color:var(--green)}
-  .ia{background:#faeeda;color:var(--accent)}
-  .ib{background:#e6f1fb;color:var(--blue)}
-  .tfoot-note{padding:10px 18px;font-size:12px;color:var(--muted);border-top:1px solid var(--border)}
-  footer{text-align:center;font-size:12px;color:var(--muted);padding:20px 0}
+:root{--bg:#f5f4f0;--card:#fff;--border:rgba(0,0,0,.1);--text:#1a1a1a;--muted:#666;--accent:#BA7517;--accent-bg:#FAEEDA;--blue:#1a73e8;--green:#0f6e56;--red:#a32d2d;--radius:10px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+.page{max-width:1400px;margin:0 auto;padding:24px 20px}
+h1{font-size:22px;font-weight:600;margin-bottom:4px}
+.subtitle{color:var(--muted);font-size:13px;margin-bottom:8px}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.meta span{font-size:12px;background:#e8e6e0;padding:3px 10px;border-radius:20px;color:var(--muted)}
+.tabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:2px solid var(--border);padding-bottom:0}
+.tab{padding:10px 18px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.mine-banner{background:var(--accent-bg);border:1.5px solid var(--accent);border-radius:var(--radius);padding:16px 20px;margin-bottom:20px;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start}
+@media(max-width:700px){.mine-banner{grid-template-columns:1fr}}
+.mine-banner h2{font-size:14px;font-weight:600;color:var(--accent);margin-bottom:10px}
+.mine-specs{display:flex;gap:8px;flex-wrap:wrap}
+.spec{background:#fff;border:1px solid rgba(186,117,23,.3);border-radius:6px;padding:5px 10px}
+.spec .lbl{font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:.03em}
+.spec .val{font-size:15px;font-weight:600}
+.verdict-box{background:var(--accent);color:#fff;border-radius:8px;padding:14px 18px;min-width:210px;text-align:center}
+.verdict-box .v-label{font-size:10px;opacity:.85;margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
+.verdict-box .v-price{font-size:24px;font-weight:700}
+.verdict-box .v-sub{font-size:11px;opacity:.8;margin-top:4px}
+.delta{margin-top:8px;font-size:13px;color:#7a4f0a}
+.delta strong{color:var(--accent)}
+.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px}
+@media(max-width:900px){.metrics{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){.metrics{grid-template-columns:repeat(2,1fr)}}
+.metric{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px}
+.metric .m-lbl{font-size:11px;color:var(--muted);margin-bottom:3px}
+.metric .m-val{font-size:20px;font-weight:600}
+.metric .m-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden}
+.card-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.card-header h3{font-size:14px;font-weight:600}
+.filters{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.chip-group{display:flex;gap:5px;flex-wrap:wrap}
+.chip{padding:4px 10px;border-radius:20px;border:1px solid var(--border);font-size:12px;cursor:pointer;background:#fff;color:var(--muted);transition:all .15s}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.f-label{font-size:12px;color:var(--muted);white-space:nowrap}
+.sep{width:1px;height:18px;background:var(--border);flex-shrink:0}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{padding:9px 10px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;background:#faf9f7;border-bottom:1px solid var(--border);cursor:pointer;white-space:nowrap;user-select:none}
+thead th:hover{color:var(--text)}
+thead th.sorted .sa{opacity:1}
+.sa{opacity:.3;margin-left:3px}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#faf9f7}
+tbody tr.mine{background:#fffaf3}
+tbody tr.mine:hover{background:#fff4e0}
+td{padding:9px 10px;vertical-align:middle}
+.badge{display:inline-block;padding:2px 7px;border-radius:12px;font-size:11px;font-weight:500}
+.b-s{background:#e1f5ee;color:#085041}
+.b-l{background:#e6f1fb;color:#0c447c}
+.b-h{background:#eeedfe;color:#3c3489}
+.b-m{background:#faeeda;color:#633806;border:1px solid var(--accent)}
+.iy{color:var(--green);font-weight:500}
+.in{color:#bbb}
+.allin{font-weight:600}
+.al-lo{color:var(--green)}
+.al-mi{color:var(--accent)}
+.al-hi{color:var(--red)}
+.ktag{font-size:11px;padding:1px 6px;border-radius:10px;background:#f0eeea;color:var(--muted)}
+.al{color:var(--blue);text-decoration:none;font-size:12px}
+.al:hover{text-decoration:underline}
+.ml{font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.04em}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+@media(max-width:900px){.charts-grid{grid-template-columns:1fr}}
+.cc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.cc h3{font-size:14px;font-weight:600;margin-bottom:3px}
+.cc .cn{font-size:12px;color:var(--muted);margin-bottom:12px}
+.cw{position:relative;height:260px}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.li{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.ld{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+#map{height:480px;border-radius:var(--radius);border:1px solid var(--border);margin-bottom:20px}
+.map-legend{background:white;padding:10px 14px;border-radius:8px;border:1px solid var(--border);font-size:12px;line-height:1.8}
+.map-legend-item{display:flex;align-items:center;gap:6px}
+.map-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.analysis{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:20px}
+.analysis h3{font-size:15px;font-weight:600;margin-bottom:12px}
+.ag{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:800px){.ag{grid-template-columns:1fr}}
+.ab{border:1px solid var(--border);border-radius:8px;padding:12px}
+.ab h4{font-size:13px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.ab p{font-size:13px;color:var(--muted);line-height:1.6}
+.ai{width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
+.ig{background:#e1f5ee;color:var(--green)}
+.ia{background:#faeeda;color:var(--accent)}
+.ib{background:#e6f1fb;color:var(--blue)}
+.tfoot-note{padding:9px 16px;font-size:12px;color:var(--muted);border-top:1px solid var(--border)}
+.history-table{width:100%;border-collapse:collapse;font-size:13px}
+.history-table th{padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);background:#faf9f7;border-bottom:1px solid var(--border)}
+.history-table td{padding:8px 12px;border-bottom:1px solid var(--border)}
+.history-table tr:last-child td{border-bottom:none}
+.add-form{padding:14px 16px;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;align-items:end}
+.add-form .field{display:flex;flex-direction:column;gap:3px}
+.add-form label{font-size:11px;color:var(--muted)}
+.add-form input,.add-form select{height:32px;border:1px solid var(--border);border-radius:6px;padding:0 8px;font-size:13px;background:#fff;color:var(--text)}
+.btn{height:32px;padding:0 14px;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--text);cursor:pointer;font-size:13px;white-space:nowrap}
+.btn:hover{background:var(--bg)}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-primary:hover{opacity:.9}
+.price-up{color:var(--green);font-size:11px}
+.price-down{color:var(--red);font-size:11px}
+footer{text-align:center;font-size:12px;color:var(--muted);padding:20px 0}
 </style>
 </head>
 <body>
 <div class="page">
 
-<div class="header">
-  <h1>Leiemarkedsanalyse — Kristiansand (UiA / Sentrum)</h1>
-  <p>Leiligheter og hybler til leie innen gangavstand til UiA og Kristiansand sentrum</p>
-  <div class="meta">
-    <span>📅 Hentet 4. april 2026</span>
-    <span>🔍 Kilde: finn.no + hybel.no</span>
-    <span>📍 Lund · Sentrum · Posebyen</span>
-    <span>🏠 12 aktive annonser analysert</span>
-  </div>
+<h1>Leiemarkedsanalyse — Kristiansand (UiA / Sentrum)</h1>
+<p class="subtitle">Leiligheter og hybler til leie innen gangavstand til UiA og Kristiansand sentrum</p>
+<div class="meta">
+  <span>📅 Oppdatert 4. april 2026</span>
+  <span>🔍 finn.no + hybel.no</span>
+  <span>📍 Lund · Gimlekollen · Tinnheia · Sentrum · 10 km radius · Lianplatå</span>
+  <span>🏠 <span id="total-count">–</span> annonser analysert (10 km radius)</span>
 </div>
 
+<!-- MITT OBJEKT -->
 <div class="mine-banner">
   <div>
-    <h2>⭐ Mitt objekt — Kjellerleilighet med strøm + internett inkludert</h2>
+    <h2>⭐ Mitt objekt — Tobienborgveien 5, 4631 Kristiansand</h2>
     <div class="mine-specs">
       <div class="spec"><div class="lbl">Størrelse</div><div class="val">55 m²</div></div>
       <div class="spec"><div class="lbl">Soverom</div><div class="val">2</div></div>
       <div class="spec"><div class="lbl">Type</div><div class="val">Sokkel</div></div>
+      <div class="spec"><div class="lbl">Byggeår</div><div class="val">1923</div></div>
+      <div class="spec"><div class="lbl">Renovert</div><div class="val">2015</div></div>
+      <div class="spec"><div class="lbl">Standard</div><div class="val">OK/God</div></div>
+      <div class="spec"><div class="lbl">Møblert</div><div class="val" style="color:var(--green)">✓ Ja</div></div>
       <div class="spec"><div class="lbl">Strøm</div><div class="val" style="color:var(--green)">✓ inkl.</div></div>
       <div class="spec"><div class="lbl">Internett</div><div class="val" style="color:var(--green)">✓ inkl.</div></div>
       <div class="spec" style="background:#faeeda"><div class="lbl">Nåværende leie</div><div class="val">14 000 kr</div></div>
     </div>
-    <p class="delta">Du leier ut <strong>1 000–2 500 kr under markedspris</strong> for tilsvarende objekter med strøm + internett inkludert.</p>
+    <p class="delta" style="margin-top:8px">Du leier ut <strong>1 500–3 000 kr under markedspris</strong> for tilsvarende møblerte objekter med strøm + internett inkludert. Bygd 1923, renovert 2015. Energimerke G — strøm inkludert i leien beskytter leietaker mot høye varmekostnader, noe som er et reelt pluss.</p>
   </div>
   <div class="verdict-box">
-    <div class="v-label">ANBEFALT MARKEDSPRIS</div>
-    <div class="v-price">15 000–16 500</div>
-    <div class="v-sub">kr/mnd · inkl. strøm + internett</div>
-    <div style="margin-top:8px;font-size:11px;opacity:.85">Beste estimat: 15 500 kr/mnd<br>+18 000 kr/år vs. dagens pris</div>
+    <div class="v-label">Anbefalt markedspris</div>
+    <div class="v-price">15 500–17 000</div>
+    <div class="v-sub">kr/mnd · møblert, inkl. strøm + nett</div>
+    <div style="margin-top:8px;font-size:11px;opacity:.85">Beste estimat: 16 000 kr/mnd
++24 000 kr/år vs. dagens pris</div>
   </div>
 </div>
 
+<!-- METRICS -->
 <div class="metrics">
   <div class="metric"><div class="m-lbl">Analyserte objekter</div><div class="m-val" id="m-count">–</div><div class="m-sub">aktive annonser</div></div>
-  <div class="metric"><div class="m-lbl">Snitt all-in (2 sov)</div><div class="m-val" id="m-avg">–</div><div class="m-sub">inkl. strøm+nett estimat</div></div>
-  <div class="metric"><div class="m-lbl">Snitt kr/m² all-in</div><div class="m-val" id="m-kvm">–</div><div class="m-sub">sammenlignbare objekter</div></div>
-  <div class="metric"><div class="m-lbl">Din pris vs. snitt</div><div class="m-val" id="m-diff">–</div><div class="m-sub">2-soverom med alt inkl.</div></div>
+  <div class="metric"><div class="m-lbl">Snitt all-in (2 sov)</div><div class="m-val" id="m-avg">–</div><div class="m-sub">inkl. strøm+nett est.</div></div>
+  <div class="metric"><div class="m-lbl">Snitt kr/m²</div><div class="m-val" id="m-kvm">–</div><div class="m-sub">all-in estimat</div></div>
+  <div class="metric"><div class="m-lbl">Din pris vs. snitt</div><div class="m-val" id="m-diff">–</div><div class="m-sub">2-sov med alt inkl.</div></div>
+  <div class="metric"><div class="m-lbl">Prisintervall</div><div class="m-val" id="m-range">–</div><div class="m-sub">min – maks all-in</div></div>
 </div>
 
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" data-tab="tabell">📋 Tabell</button>
+  <button class="tab" data-tab="kart">🗺 Kart</button>
+  <button class="tab" data-tab="grafer">📊 Grafer</button>
+  <button class="tab" data-tab="historikk">📈 Prishistorikk</button>
+</div>
+
+<!-- TAB: TABELL -->
+<div class="tab-content active" id="tab-tabell">
 <div class="card">
-  <div class="card-header"><h3>Alle annonser</h3><span class="note">Klikk kolonneoverskrift for å sortere</span></div>
+  <div class="card-header">
+    <h3>Alle annonser</h3>
+    <span style="font-size:12px;color:var(--muted)">Klikk kolonneoverskrift for å sortere</span>
+  </div>
   <div class="filters">
     <span class="f-label">Type:</span>
     <div class="chip-group" id="fg-type">
@@ -155,8 +196,17 @@
     <span class="f-label">Soverom:</span>
     <div class="chip-group" id="fg-sov">
       <button class="chip active" data-val="Alle">Alle</button>
-      <button class="chip" data-val="1">1 sov</button>
-      <button class="chip" data-val="2">2 sov</button>
+      <button class="chip" data-val="0">0</button>
+      <button class="chip" data-val="1">1</button>
+      <button class="chip" data-val="2">2</button>
+      <button class="chip" data-val="3">3+</button>
+    </div>
+    <div class="sep"></div>
+    <span class="f-label">Møblert:</span>
+    <div class="chip-group" id="fg-moblert">
+      <button class="chip active" data-val="Alle">Alle</button>
+      <button class="chip" data-val="Ja">Møblert</button>
+      <button class="chip" data-val="Nei">Umøblert</button>
     </div>
     <div class="sep"></div>
     <span class="f-label">Kilde:</span>
@@ -168,56 +218,116 @@
   </div>
   <div class="table-wrap">
     <table>
-      <thead id="thead">
-        <tr>
-          <th data-col="mine"></th>
-          <th data-col="adr">Adresse <span class="sa">↕</span></th>
-          <th data-col="type">Type <span class="sa">↕</span></th>
-          <th data-col="m2">m² <span class="sa">↕</span></th>
-          <th data-col="sov">Sov <span class="sa">↕</span></th>
-          <th data-col="pris">Ann. pris <span class="sa">↕</span></th>
-          <th data-col="inkl">Inkluderer</th>
-          <th data-col="allin">All-in <span class="sa">↕</span></th>
-          <th data-col="kvm">kr/m² <span class="sa">↕</span></th>
-          <th data-col="beliggenhet">Beliggenhet</th>
-          <th data-col="standard">Standard</th>
-          <th data-col="kilde">Kilde <span class="sa">↕</span></th>
-          <th>Annonse</th>
-        </tr>
-      </thead>
+      <thead id="thead"><tr>
+        <th data-col="mine"></th>
+        <th data-col="adr">Adresse <span class="sa">↕</span></th>
+        <th data-col="type">Type <span class="sa">↕</span></th>
+        <th data-col="m2">m² <span class="sa">↕</span></th>
+        <th data-col="sov">Sov <span class="sa">↕</span></th>
+        <th data-col="pris">Ann. pris <span class="sa">↕</span></th>
+        <th data-col="inkl">Inkl.</th>
+        <th data-col="moblert">Møblert</th>
+        <th data-col="parkering">Parkering</th>
+        <th data-col="allin">All-in <span class="sa">↕</span></th>
+        <th data-col="kvm">kr/m² <span class="sa">↕</span></th>
+        <th data-col="renovert">Renovert</th>
+        <th data-col="beliggenhet">Beliggenhet</th>
+        <th data-col="kilde">Kilde <span class="sa">↕</span></th>
+        <th>Annonse</th>
+      </tr></thead>
       <tbody id="tbody"></tbody>
     </table>
   </div>
-  <div class="tfoot-note">* All-in = annonsert pris + estimert strøm (~2 000 kr/mnd for 50–70 m²) + internett (~450 kr/mnd) der ikke inkludert.</div>
+  <div class="tfoot-note">* All-in = annonsert pris + estimert strøm (~2 000 kr) + internett (~450 kr) der ikke inkludert. Møblert-tillegg ikke lagt til.</div>
+</div>
 </div>
 
-<div class="charts-grid">
-  <div class="cc">
-    <h3>Pris vs. størrelse (all-in)</h3>
-    <p class="cn">Hvert punkt = ett objekt. Oransje = ditt objekt, grønn = anbefalt ny pris.</p>
-    <div class="cw"><canvas id="c-scatter"></canvas></div>
-    <div class="legend">
-      <div class="li"><div class="ld" style="background:#1a73e8"></div>Leilighet</div>
-      <div class="li"><div class="ld" style="background:#0f6e56"></div>Sokkel/Hybel</div>
-      <div class="li"><div class="ld" style="background:#BA7517;border-radius:50%"></div>Ditt objekt</div>
-      <div class="li"><div class="ld" style="background:#3B6D11;border-radius:50%"></div>Anbefalt</div>
+<!-- TAB: KART -->
+<div class="tab-content" id="tab-kart">
+  <div class="card" style="overflow:visible">
+    <div class="card-header">
+      <h3>Kart — alle objekter</h3>
+      <span style="font-size:12px;color:var(--muted)">Klikk på en pin for detaljer</span>
     </div>
-  </div>
-  <div class="cc">
-    <h3>Annonsert pris vs. all-in estimat</h3>
-    <p class="cn">Differansen viser hva strøm/internett legger til. Ditt objekt har null differanse.</p>
-    <div class="cw"><canvas id="c-bar"></canvas></div>
-    <div class="legend">
-      <div class="li"><div class="ld" style="background:#85B7EB"></div>Annonsert pris</div>
-      <div class="li"><div class="ld" style="background:#1D9E75"></div>All-in estimat</div>
+    <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;gap:16px;flex-wrap:wrap;align-items:center">
+      <div class="map-legend">
+        <div class="map-legend-item"><div class="map-dot" style="background:#BA7517;border:2px solid #7a4f0a"></div> Ditt objekt</div>
+        <div class="map-legend-item"><div class="map-dot" style="background:#1a73e8"></div> Leilighet</div>
+        <div class="map-legend-item"><div class="map-dot" style="background:#0f6e56"></div> Sokkelleilighet/Hybel</div>
+        <div class="map-legend-item"><div class="map-dot" style="background:#a32d2d"></div> Dyreste (all-in)</div>
+        <div class="map-legend-item"><div class="map-dot" style="background:#3B6D11"></div> Billigste (all-in)</div>
+      </div>
+      <div style="font-size:12px;color:var(--muted)">Pinfargen viser prisnivå relativt til markedssnittet.<br>Størrelsen på sirkelen viser m².</div>
+    </div>
+    <div style="padding:12px 16px">
+      <div id="map"></div>
     </div>
   </div>
 </div>
 
-<div class="cc" style="margin-bottom:20px">
-  <h3>Kr/m² all-in per objekt</h3>
-  <p class="cn">Normalisert pris per kvadratmeter inkl. strøm og internett. Grønn = under snittet, rød = over snittet.</p>
-  <div class="cw" style="height:220px"><canvas id="c-kvm"></canvas></div>
+<!-- TAB: GRAFER -->
+<div class="tab-content" id="tab-grafer">
+  <div class="charts-grid">
+    <div class="cc">
+      <h3>Pris vs. størrelse (all-in)</h3>
+      <p class="cn">Hvert punkt = ett objekt. Oransje trekant = ditt objekt, grønn = anbefalt ny pris.</p>
+      <div class="cw"><canvas id="c-scatter"></canvas></div>
+      <div class="legend">
+        <div class="li"><div class="ld" style="background:#1a73e8"></div>Leilighet</div>
+        <div class="li"><div class="ld" style="background:#0f6e56"></div>Sokkel/Hybel</div>
+        <div class="li"><div class="ld" style="background:#BA7517;border-radius:50%"></div>Ditt objekt</div>
+        <div class="li"><div class="ld" style="background:#3B6D11;border-radius:50%"></div>Anbefalt (16 000 kr)</div>
+      </div>
+    </div>
+    <div class="cc">
+      <h3>Annonsert pris vs. all-in estimat</h3>
+      <p class="cn">Differansen viser hva strøm/internett legger til. Ditt objekt har null differanse.</p>
+      <div class="cw"><canvas id="c-bar"></canvas></div>
+    </div>
+  </div>
+  <div class="charts-grid">
+    <div class="cc">
+      <h3>Kr/m² all-in per objekt</h3>
+      <p class="cn">Grønn = under snittet, rød = over snittet.</p>
+      <div class="cw" style="height:220px"><canvas id="c-kvm"></canvas></div>
+    </div>
+    <div class="cc">
+      <h3>Fordeling etter antall soverom</h3>
+      <p class="cn">Antall aktive annonser per soveromskategori.</p>
+      <div class="cw" style="height:220px"><canvas id="c-sov"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB: HISTORIKK -->
+<div class="tab-content" id="tab-historikk">
+  <div class="card">
+    <div class="card-header">
+      <h3>Prishistorikk per objekt</h3>
+      <button class="btn" onclick="toggleAddHistory()">+ Legg til registrering</button>
+    </div>
+    <div id="add-history-form" style="display:none" class="add-form">
+      <div class="field"><label>Adresse</label><input type="text" id="h-adr" placeholder="f.eks. Brinken 12"></div>
+      <div class="field"><label>Dato</label><input type="date" id="h-dato"></div>
+      <div class="field"><label>Pris (kr/mnd)</label><input type="number" id="h-pris" placeholder="15000"></div>
+      <div class="field"><label>Notat</label><input type="text" id="h-note" placeholder="valgfritt"></div>
+      <div class="field"><label>&nbsp;</label><button class="btn btn-primary" onclick="addHistory()">Lagre</button></div>
+    </div>
+    <div class="table-wrap">
+      <table class="history-table">
+        <thead><tr>
+          <th>Dato</th><th>Adresse</th><th>Pris</th><th>Endring</th><th>Notat</th>
+        </tr></thead>
+        <tbody id="history-tbody"></tbody>
+      </table>
+    </div>
+    <div class="tfoot-note">Registrer priser over tid for å følge markedsutviklingen. Data lagres lokalt i nettleseren.</div>
+  </div>
+  <div class="cc" style="margin-bottom:20px">
+    <h3>Prisutvikling over tid</h3>
+    <p class="cn">Viser registrerte priser per objekt over tid.</p>
+    <div class="cw" style="height:280px"><canvas id="c-history"></canvas></div>
+  </div>
 </div>
 
 <div class="analysis">
@@ -225,86 +335,137 @@
   <div class="ag">
     <div class="ab">
       <h4><span class="ai ig">✓</span>Hva taler for høyere pris</h4>
-      <p>Strøm <em>og</em> internett inkludert er sjeldent i markedet — de fleste annonserer uten. Din 14 000 kr er derfor direkte sammenlignbar med leiligheter til 16 000–18 000 kr. Nærmeste konkurrent Brinken 12 (55 m², sokkel, 5 min UiA) annonserer 12 900 kr uten strøm → all-in ~14 900 kr. Du er allerede billigere enn din mest sammenlignbare konkurrent.</p>
+      <p>Strøm, internett <em>og</em> møblering inkludert er sjeldent i markedet. Din 14 000 kr er direkte sammenlignbar med leiligheter til 17 000–20 000 kr. Renovert 2015 med god standard er et klart pluss. Nærmeste konkurrent Brinken 12 (55 m², sokkel, 5 min UiA) annonserer 12 900 kr — men uten strøm og uten møbler. Huset er fra 1923 (energimerke G), men siden <strong>strøm er inkludert i leien</strong> bærer du risikoen for varmekostnadene — noe som faktisk er et salgsargument overfor leietaker.</p>
     </div>
     <div class="ab">
-      <h4><span class="ai ia">↕</span>Relevante prisjusteringer</h4>
-      <p>Kjellerleiligheter prises normalt <strong>5–10% under</strong> tilsvarende 2.–3. etasje pga. lysforhold — allerede reflektert i anbefalingen. To soverom i 55 m² er ettertraktet blant studenterpar nær UiA. Brinken 36 (hybel, 68 m², ALT inkludert) leies ut for 19 500 kr, noe som underbygger at «alt inkludert»-modellen kan forsvare en tydelig premiumpris.</p>
+      <h4><span class="ai ia">↕</span>Relevante justeringer</h4>
+      <p>Kjellerleiligheter prises normalt <strong>5–10% under</strong> tilsvarende etasjeleiligheter pga. lysforhold. Møblert bolig kan typisk prises <strong>1 000–2 000 kr høyere</strong> enn tilsvarende umøblert. Tobienborgveien ligger ca. 10–15 min gange fra UiA — litt lengre enn Brinken, men tatt med i beregningen.</p>
     </div>
     <div class="ab">
       <h4><span class="ai ib">→</span>Konkret anbefaling</h4>
-      <p>Øk leieprisen til <strong>15 500 kr/mnd</strong> ved neste leieforhold. Det er godt under markedssnittet all-in (~18 500 kr for 2-sov), men rettferdig for kjeller. Det gir <strong>+18 000 kr/år</strong>. Alternativt kan du annonsere uten strøm til ~13 500 kr, men anbefaler å beholde alt-inkludert-modellen — det tiltrekker pålitelige langtidsleietakere.</p>
+      <p>Øk til <strong>16 000 kr/mnd</strong> ved neste leieforhold. Det er under markedssnittet all-in (~19 000 kr for møblert 2-sov), men rettferdig for kjeller med god standard. Gir <strong>+24 000 kr/år</strong>. Behold alt-inkludert-modellen — tiltrekker pålitelige langtidsleietakere.</p>
     </div>
   </div>
 </div>
 
-<footer>Leiemarkedsanalyse generert av Claude · finn.no + hybel.no · April 2026 · Alle priser NOK/mnd</footer>
+<footer>Leiemarkedsanalyse · finn.no + hybel.no · April 2026 · Tobienborgveien 5, Kristiansand</footer>
 </div>
 
 <script>
+// ============================================================
+// DATA
+// ============================================================
 const D = [
-  {mine:true,adr:'Din kjellerleilighet',type:'Sokkelleilighet',m2:55,sov:2,pris:14000,strom:true,nett:true,allin:14000,beliggenhet:'–',standard:'–',kilde:'–',url:''},
-  {adr:'Brinken 12',type:'Sokkelleilighet',m2:55,sov:2,pris:12900,strom:false,nett:true,allin:14900,beliggenhet:'Lund · 5 min UiA',standard:'God (bygget 2020)',kilde:'finn.no',url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=444754409'},
-  {adr:'Dronningens Gate 24A',type:'Leilighet',m2:80,sov:2,pris:14000,strom:false,nett:false,allin:16500,beliggenhet:'Sentrum · 4. etasje',standard:'OK · delvis møblert · balkong',kilde:'finn.no',url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=451662621'},
-  {adr:'Flaten 16',type:'Leilighet',m2:60,sov:1,pris:13500,strom:false,nett:false,allin:16000,beliggenhet:'Lund · nær UiA',standard:'Pen · møblert · vedovn',kilde:'finn.no',url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=150387629'},
-  {adr:'Elvegata 6',type:'Leilighet',m2:60,sov:2,pris:16000,strom:false,nett:true,allin:18000,beliggenhet:'Sentrum · 2. etasje',standard:'Nyoppusset 2026',kilde:'finn.no',url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=458163537'},
-  {adr:'Frydenlundsveien 20C',type:'Leilighet',m2:79,sov:2,pris:17000,strom:false,nett:true,allin:19000,beliggenhet:'Lund · 12 min UiA · 3. etasje',standard:'Pen · delvis møblert · utsikt',kilde:'finn.no',url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=457825787'},
-  {adr:'Holbergs Gate 64',type:'Leilighet',m2:56,sov:2,pris:18000,strom:false,nett:true,allin:20000,beliggenhet:'Posebyen · 4. etasje',standard:'Nyrenovert mars 2026',kilde:'finn.no',url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=458060201'},
-  {adr:'Freyasdalsveien 33',type:'Leilighet',m2:61,sov:2,pris:18500,strom:false,nett:false,allin:21000,beliggenhet:'Lund · nær UiA · 2. etasje',standard:'Pen · fullmøblert · AC · balkong',kilde:'finn.no + hybel.no',url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=412774834'},
-  {adr:'Dronningens Gate 34A',type:'Leilighet',m2:60,sov:2,pris:18900,strom:false,nett:true,allin:20400,beliggenhet:'Sentrum · 1. etasje · 2018-bygg',standard:'God · takterrasse · moderne',kilde:'hybel.no',url:'https://hybel.no/bolig/238959/leilighet-3-roms-dronningens-gate-34a-kristiansand/'},
-  {adr:'Kongens Gate 45',type:'Leilighet',m2:52,sov:1,pris:13250,strom:false,nett:false,allin:15800,beliggenhet:'Sentrum · 1. etasje',standard:'God · møblert · hems',kilde:'hybel.no',url:'https://hybel.no/bolig/249996/leilighet-2-roms-kongens-gate-45-kristiansand-s/'},
-  {adr:'Brinken 36',type:'Hybel',m2:68,sov:2,pris:19500,strom:true,nett:true,allin:19500,beliggenhet:'Lund · 1 km UiA · 1. etasje',standard:'God · møblert · vannbåren varme',kilde:'hybel.no',url:'https://hybel.no/bolig/251069/hybel-3-roms-brinken-36-kristiansand/'},
-  {adr:'Kristian Ivs Gate 21',type:'Leilighet',m2:36,sov:1,pris:15000,strom:false,nett:true,allin:16500,beliggenhet:'Sentrum · 4. etasje · utsikt',standard:'God · møblert · AC',kilde:'hybel.no',url:'https://hybel.no/bolig/298605/leilighet-2-roms-kristian-ivs-gate-21-kristiansand/'},
+  {mine:true, adr:'Tobienborgveien 5', type:'Sokkelleilighet', m2:55, sov:2, pris:14000, strom:true, nett:true, moblert:'Ja', parkering:'Ja', allin:14000, renovert:'2015 (bygd 1923)', beliggenhet:'Lund · 3 min buss', kilde:'–', url:'https://www.finn.no/realestate/homes/ad.html?finnkode=377158590', lat:58.1612, lng:7.9978},
+  {adr:'Brinken 12', type:'Sokkelleilighet', m2:55, sov:2, pris:12900, strom:false, nett:true, moblert:'Delvis', parkering:'Ja', allin:14900, renovert:'2020', beliggenhet:'Lund · 5 min UiA', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=444754409', lat:58.1583, lng:7.9951},
+  {adr:'Dronningens Gate 24A', type:'Leilighet', m2:80, sov:2, pris:14000, strom:false, nett:false, moblert:'Delvis', parkering:'Nei', allin:16500, renovert:'–', beliggenhet:'Sentrum · 4. etg', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=451662621', lat:58.1467, lng:7.9953},
+  {adr:'Flaten 16', type:'Leilighet', m2:60, sov:1, pris:13500, strom:false, nett:false, moblert:'Ja', parkering:'Ja', allin:16000, renovert:'2026', beliggenhet:'Lund · nær UiA', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=150387629', lat:58.1596, lng:7.9945},
+  {adr:'Elvegata 6', type:'Leilighet', m2:60, sov:2, pris:16000, strom:false, nett:true, moblert:'Ja', parkering:'Nei', allin:18000, renovert:'2026', beliggenhet:'Sentrum · 2. etg', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=458163537', lat:58.1452, lng:7.9932},
+  {adr:'Frydenlundsveien 20C', type:'Leilighet', m2:79, sov:2, pris:17000, strom:false, nett:true, moblert:'Delvis', parkering:'Nei', allin:19000, renovert:'–', beliggenhet:'Lund · 12 min UiA · 3. etg', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=457825787', lat:58.1559, lng:7.9934},
+  {adr:'Holbergs Gate 64', type:'Leilighet', m2:56, sov:2, pris:18000, strom:false, nett:true, moblert:'Delvis', parkering:'Nei', allin:20000, renovert:'2026', beliggenhet:'Posebyen · 4. etg', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=458060201', lat:58.1478, lng:7.9961},
+  {adr:'Freyasdalsveien 33', type:'Leilighet', m2:61, sov:2, pris:18500, strom:false, nett:false, moblert:'Ja', parkering:'Ja', allin:21000, renovert:'–', beliggenhet:'Lund · nær UiA · 2. etg', kilde:'finn.no + hybel.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=412774834', lat:58.1571, lng:7.9939},
+  {adr:'Dronningens Gate 34A', type:'Leilighet', m2:60, sov:2, pris:18900, strom:false, nett:true, moblert:'Nei', parkering:'Nei', allin:20400, renovert:'2018', beliggenhet:'Sentrum · 1. etg · 2018-bygg', kilde:'hybel.no', url:'https://hybel.no/bolig/238959/leilighet-3-roms-dronningens-gate-34a-kristiansand/', lat:58.1471, lng:7.9957},
+  {adr:'Kongens Gate 45', type:'Leilighet', m2:52, sov:1, pris:13250, strom:false, nett:false, moblert:'Ja', parkering:'Nei', allin:15800, renovert:'1899/renov', beliggenhet:'Sentrum · 1. etg', kilde:'hybel.no', url:'https://hybel.no/bolig/249996/leilighet-2-roms-kongens-gate-45-kristiansand-s/', lat:58.1463, lng:7.9972},
+  {adr:'Brinken 36', type:'Hybel', m2:68, sov:2, pris:19500, strom:true, nett:true, moblert:'Ja', parkering:'Ja', allin:19500, renovert:'–', beliggenhet:'Lund · 1 km UiA · 1. etg', kilde:'hybel.no', url:'https://hybel.no/bolig/251069/hybel-3-roms-brinken-36-kristiansand/', lat:58.1579, lng:7.9948},
+  {adr:'Kristian Ivs Gate 21', type:'Leilighet', m2:36, sov:1, pris:15000, strom:false, nett:true, moblert:'Ja', parkering:'Nei', allin:16500, renovert:'2021', beliggenhet:'Sentrum · 4. etg · utsikt', kilde:'hybel.no', url:'https://hybel.no/bolig/298605/leilighet-2-roms-kristian-ivs-gate-21-kristiansand/', lat:58.1474, lng:7.9984},
+  {adr:'Kirkegata 7B', type:'Leilighet', m2:70, sov:3, pris:19000, strom:false, nett:false, moblert:'Ja', parkering:'Nei', allin:21450, renovert:'–', beliggenhet:'Sentrum', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=457138583', lat:58.1458, lng:7.9948},
+  {adr:'Ringlebekk Terrasse 21', type:'Leilighet', m2:80, sov:1, pris:13000, strom:false, nett:false, moblert:'Nei', parkering:'Ja', allin:15450, renovert:'–', beliggenhet:'Sødal · nær UiA', kilde:'finn.no', url:'', lat:58.1637, lng:7.9891},
+  {adr:'Markens Gate 6 (4sov)', type:'Leilighet', m2:120, sov:4, pris:23900, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:26350, renovert:'–', beliggenhet:'Sentrum', kilde:'hybel.no', url:'', lat:58.1456, lng:7.9964},
+  {adr:'Smiedalen 27E', type:'Leilighet', m2:97, sov:4, pris:25000, strom:false, nett:false, moblert:'Nei', parkering:'Ja', allin:27450, renovert:'–', beliggenhet:'Nær UiA', kilde:'hybel.no', url:'', lat:58.1622, lng:7.9902},
+  {adr:'Torridalsveien 48 (4sov)', type:'Leilighet', m2:88, sov:4, pris:26000, strom:false, nett:false, moblert:'Nei', parkering:'Ja', allin:28450, renovert:'–', beliggenhet:'Nær UiA', kilde:'hybel.no', url:'', lat:58.1608, lng:7.9918},
+  {adr:'Holbergs Gate 43', type:'Leilighet', m2:86, sov:2, pris:19000, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:21450, renovert:'–', beliggenhet:'Posebyen/Kvadraturen', kilde:'hybel.no', url:'', lat:58.1481, lng:7.9953},
+  // --- NYE OBJEKTER: 10 km radius, Lund/Gimlekollen/nærområde ---
+  {adr:'Bjørndalen allé 11', type:'Leilighet', m2:51, sov:1, pris:16500, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:18950, renovert:'2026 (ny)', beliggenhet:'Lund · ny bygning', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=391881359', lat:58.1578, lng:7.9943},
+  {adr:'Freyasdalsveien 56 (liten)', type:'Leilighet', m2:25, sov:1, pris:8200, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:10650, renovert:'–', beliggenhet:'Lund · nyere bygg', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=304916489', lat:58.1572, lng:7.9939},
+  {adr:'Freyasdalsveien 56 (4-roms)', type:'Leilighet', m2:85, sov:3, pris:16500, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:18950, renovert:'–', beliggenhet:'Lund · sentralt', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=147301732', lat:58.1572, lng:7.9941},
+  {adr:'Ringlebekkveien 6', type:'Leilighet', m2:null, sov:2, pris:16800, strom:false, nett:false, moblert:'Nei', parkering:'Ja', allin:19250, renovert:'2026 (ny)', beliggenhet:'Gimlekollen/Ringlebekk', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=528343', lat:58.1641, lng:7.9977},
+  {adr:'Urds vei 4A (rekkehus)', type:'Leilighet', m2:null, sov:5, pris:17900, strom:false, nett:false, moblert:'Nei', parkering:'Ja', allin:20350, renovert:'–', beliggenhet:'Lund · hage', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=457132992', lat:58.1568, lng:7.9947},
+  {adr:'Håkon den Godes Vei 14A', type:'Leilighet', m2:71, sov:3, pris:17490, strom:false, nett:false, moblert:'Nei', parkering:'Ja', allin:19940, renovert:'ny', beliggenhet:'Lund/Gimlekollen · EL-lader', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=399535626', lat:58.1623, lng:7.9985},
+  {adr:'Odderheistien 10', type:'Leilighet', m2:80, sov:2, pris:12000, strom:false, nett:false, moblert:'Delvis', parkering:'Ja', allin:14450, renovert:'–', beliggenhet:'Odderhei · rolig', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=74870077', lat:58.1601, lng:7.9872},
+  {adr:'Blyveien 2 (Tinnheia)', type:'Leilighet', m2:71, sov:2, pris:17000, strom:false, nett:true, moblert:'Nei', parkering:'Ja', allin:19000, renovert:'–', beliggenhet:'Tinnheia · parkering i kjeller', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=458021110', lat:58.1714, lng:8.0082},
+  {adr:'Gullveien 11 (Tinnheia)', type:'Leilighet', m2:51, sov:2, pris:15400, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:17850, renovert:'–', beliggenhet:'Tinnheia · panoramautsikt', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=456279255', lat:58.1709, lng:8.0078},
+  {adr:'Rødvingeveien 12 (Slettheia)', type:'Leilighet', m2:45, sov:1, pris:10500, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:12950, renovert:'–', beliggenhet:'Slettheia', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=233740774', lat:58.1668, lng:8.0143},
+  {adr:'Hellemyrbakken 20', type:'Leilighet', m2:90, sov:3, pris:17500, strom:false, nett:false, moblert:'Nei', parkering:'Ja', allin:19950, renovert:'–', beliggenhet:'Hellemyr · 2 balkonger · EL-lader', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=417950469', lat:58.1688, lng:8.0031}
 ];
 D.forEach(l=>{l.kvm=l.m2?Math.round(l.allin/l.m2):null});
 
-let sortCol='allin',sortAsc=true;
-let filters={type:'Alle',sov:'Alle',kilde:'Alle'};
+// ============================================================
+// STATE
+// ============================================================
+let sortCol='allin', sortAsc=true;
+let filters={type:'Alle', sov:'Alle', moblert:'Alle', kilde:'Alle'};
+let historyData = JSON.parse(localStorage.getItem('leiehistory')||'[]');
 
+// Init history with some seed data
+if(historyData.length===0){
+  historyData=[
+    {dato:'2026-01-15', adr:'Brinken 12', pris:12900, note:'Første registrering'},
+    {dato:'2026-01-15', adr:'Freyasdalsveien 33', pris:17500, note:'Første registrering'},
+    {dato:'2026-01-15', adr:'Ditt objekt', pris:14000, note:'Nåværende pris'},
+    {dato:'2026-04-04', adr:'Brinken 12', pris:12900, note:'Uendret'},
+    {dato:'2026-04-04', adr:'Freyasdalsveien 33', pris:18500, note:'Prisøkning +1000 kr'},
+    {dato:'2026-04-04', adr:'Ditt objekt', pris:14000, note:'Uendret'},
+  ];
+  localStorage.setItem('leiehistory', JSON.stringify(historyData));
+}
+
+// ============================================================
+// FILTER / SORT
+// ============================================================
 function getFiltered(){
   return D.filter(l=>{
     if(filters.type!=='Alle'&&l.type!==filters.type)return false;
-    if(filters.sov!=='Alle'&&String(l.sov)!==filters.sov)return false;
+    if(filters.sov!=='Alle'){
+      if(filters.sov==='3+'){ if(l.sov<3)return false; }
+      else if(String(l.sov)!==filters.sov)return false;
+    }
+    if(filters.moblert!=='Alle'&&l.moblert!==filters.moblert)return false;
     if(filters.kilde!=='Alle'&&!l.kilde.includes(filters.kilde))return false;
     return true;
   });
 }
 function getSorted(arr){
   return [...arr].sort((a,b)=>{
-    if(a.mine)return -1;if(b.mine)return 1;
-    let av=a[sortCol],bv=b[sortCol];
-    if(av==null&&bv==null)return 0;if(av==null)return 1;if(bv==null)return -1;
-    if(typeof av==='string')return sortAsc?av.localeCompare(bv):bv.localeCompare(av);
+    if(a.mine)return -1; if(b.mine)return 1;
+    let av=a[sortCol], bv=b[sortCol];
+    if(av==null&&bv==null)return 0; if(av==null)return 1; if(bv==null)return -1;
+    if(typeof av==='string')return sortAsc?av.localeCompare(bv,'no'):bv.localeCompare(av,'no');
     return sortAsc?av-bv:bv-av;
   });
 }
+
+// ============================================================
+// TABLE
+// ============================================================
 function inklHtml(l){
-  return (l.strom?'<span class="iy">Strøm ✓</span>':'<span class="in">Strøm –</span>')+
-    ' · '+(l.nett?'<span class="iy">Nett ✓</span>':'<span class="in">Nett –</span>');
+  return (l.strom?'<span class="iy">⚡</span>':'<span class="in">–</span>')+
+    (l.nett?'<span class="iy"> 📶</span>':'<span class="in"> –</span>');
 }
-function allinCls(v,mine){if(mine)return '';return v<15000?'al-lo':v<18500?'al-mi':'al-hi';}
+function allinCls(v,mine){if(mine)return'';return v<16000?'al-lo':v<20000?'al-mi':'al-hi';}
 function badgeCls(t){return t==='Sokkelleilighet'?'b-s':t==='Hybel'?'b-h':'b-l';}
 
 function renderTable(){
   const rows=getSorted(getFiltered());
-  document.getElementById('tbody').innerHTML=rows.map(l=>{
-    const rc=l.mine?'class="mine"':'';
-    return `<tr ${rc}>
-      <td>${l.mine?'<span class="ml">⭐ Ditt</span>':''}</td>
+  document.getElementById('tbody').innerHTML=rows.map(l=>`
+    <tr ${l.mine?'class="mine"':''}>
+      <td>${l.mine?'<span class="ml">⭐</span>':''}</td>
       <td><strong>${l.adr}</strong></td>
       <td>${l.mine?'<span class="badge b-m">Sokkel</span>':`<span class="badge ${badgeCls(l.type)}">${l.type}</span>`}</td>
-      <td>${l.m2??'–'}</td><td>${l.sov??'–'}</td>
+      <td>${l.m2??'–'}</td>
+      <td>${l.sov??'–'}</td>
       <td>${l.pris?l.pris.toLocaleString('no')+' kr':'–'}</td>
       <td style="white-space:nowrap">${inklHtml(l)}</td>
+      <td>${l.moblert==='Ja'?'<span class="iy">✓</span>':l.moblert==='Delvis'?'<span style="color:var(--accent)">~</span>':'<span class="in">–</span>'}</td>
+      <td>${l.parkering==='Ja'?'<span class="iy">✓</span>':'<span class="in">–</span>'}</td>
       <td><span class="allin ${allinCls(l.allin,l.mine)}">${l.allin?l.allin.toLocaleString('no')+' kr':'–'}</span></td>
       <td>${l.kvm?l.kvm.toLocaleString('no')+' kr':'–'}</td>
+      <td style="font-size:12px;color:var(--muted)">${l.renovert||'–'}</td>
       <td style="font-size:12px;color:var(--muted)">${l.beliggenhet}</td>
-      <td style="font-size:12px;color:var(--muted)">${l.standard}</td>
       <td>${l.kilde!=='–'?`<span class="ktag">${l.kilde}</span>`:'–'}</td>
-      <td>${l.url?`<a class="al" href="${l.url}" target="_blank">Åpne ↗</a>`:'–'}</td>
-    </tr>`;
-  }).join('');
+      <td>${l.url?`<a class="al" href="${l.url}" target="_blank">↗</a>`:'–'}</td>
+    </tr>`).join('');
   updateMetrics(rows);
+  document.getElementById('total-count').textContent = D.filter(x=>!x.mine).length;
 }
 
 function updateMetrics(rows){
@@ -313,37 +474,106 @@ function updateMetrics(rows){
   const wm=m.filter(r=>r.kvm);
   const avgK=wm.length?Math.round(wm.reduce((a,b)=>a+b.kvm,0)/wm.length):0;
   const diff=avg>0?Math.round((14000-avg)/avg*100):0;
+  const allPrices=rows.filter(r=>!r.mine&&r.allin).map(r=>r.allin);
+  const mn=allPrices.length?Math.min(...allPrices):0;
+  const mx=allPrices.length?Math.max(...allPrices):0;
   document.getElementById('m-count').textContent=rows.filter(r=>!r.mine).length;
   document.getElementById('m-avg').textContent=avg>0?avg.toLocaleString('no')+' kr':'–';
   document.getElementById('m-kvm').textContent=avgK>0?avgK.toLocaleString('no')+' kr':'–';
   const el=document.getElementById('m-diff');
   el.textContent=diff!==0?(diff>0?'+':'')+diff+'%':'–';
   el.style.color=diff<0?'var(--red)':'var(--green)';
+  document.getElementById('m-range').textContent=mn&&mx?mn.toLocaleString('no')+'–'+mx.toLocaleString('no'):'–';
 }
 
 // Sorting
 document.getElementById('thead').addEventListener('click',e=>{
-  const th=e.target.closest('th[data-col]');if(!th)return;
-  const col=th.dataset.col;if(!col||col==='mine'||col==='inkl')return;
-  if(sortCol===col)sortAsc=!sortAsc;else{sortCol=col;sortAsc=col!=='adr';}
+  const th=e.target.closest('th[data-col]'); if(!th)return;
+  const col=th.dataset.col; if(!col||col==='mine'||col==='inkl')return;
+  if(sortCol===col)sortAsc=!sortAsc; else{sortCol=col;sortAsc=col!=='adr';}
   document.querySelectorAll('thead th').forEach(t=>{t.classList.remove('sorted');const s=t.querySelector('.sa');if(s)s.textContent='↕';});
-  th.classList.add('sorted');const sa=th.querySelector('.sa');if(sa)sa.textContent=sortAsc?'↓':'↑';
-  renderTable();renderCharts();
+  th.classList.add('sorted'); const sa=th.querySelector('.sa'); if(sa)sa.textContent=sortAsc?'↓':'↑';
+  renderTable(); renderCharts();
 });
 
-// Chip filters
-['fg-type','fg-sov','fg-kilde'].forEach(id=>{
+// Chips
+['fg-type','fg-sov','fg-moblert','fg-kilde'].forEach(id=>{
   document.getElementById(id).addEventListener('click',e=>{
-    const b=e.target.closest('.chip');if(!b)return;
+    const b=e.target.closest('.chip'); if(!b)return;
     e.currentTarget.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
     b.classList.add('active');
     filters[id.replace('fg-','')]=b.dataset.val;
-    renderTable();renderCharts();
+    renderTable(); renderCharts(); renderMap();
   });
 });
 
-// Charts
-let cS,cB,cK;
+// ============================================================
+// MAP
+// ============================================================
+let map=null, mapMarkers=[];
+
+function initMap(){
+  if(map)return;
+  map=L.map('map').setView([58.155, 7.996], 14);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    attribution:'© OpenStreetMap contributors', maxZoom:19
+  }).addTo(map);
+}
+
+function renderMap(){
+  initMap();
+  mapMarkers.forEach(m=>m.remove());
+  mapMarkers=[];
+  const data=getFiltered();
+  const prices=data.filter(l=>!l.mine&&l.allin).map(l=>l.allin);
+  const minP=Math.min(...prices), maxP=Math.max(...prices);
+
+  data.forEach(l=>{
+    if(!l.lat||!l.lng)return;
+    let color, size;
+    if(l.mine){ color='#BA7517'; size=18; }
+    else{
+      const ratio=(l.allin-minP)/(maxP-minP||1);
+      const r=Math.round(26+ratio*(163-26));
+      const g=Math.round(110-ratio*(110-45));
+      const b=Math.round(86-ratio*(86-45));
+      color=l.allin<16000?'#3B6D11':l.allin>21000?'#a32d2d':'#1a73e8';
+      size=Math.max(12, Math.min(22, 12+(l.m2||50)/10));
+    }
+
+    const icon=L.divIcon({
+      className:'',
+      html:`<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;font-size:9px;color:white;font-weight:700">${l.mine?'★':l.sov}</div>`,
+      iconSize:[size,size], iconAnchor:[size/2,size/2]
+    });
+
+    const marker=L.marker([l.lat,l.lng],{icon}).addTo(map);
+    const strom=l.strom?'✓':'–'; const nett=l.nett?'✓':'–'; const mob=l.moblert;
+    marker.bindPopup(`
+      <div style="font-family:-apple-system,sans-serif;min-width:200px">
+        <div style="font-weight:600;font-size:13px;margin-bottom:6px">${l.mine?'⭐ ':''}<strong>${l.adr}</strong></div>
+        <div style="font-size:12px;color:#666;margin-bottom:8px">${l.beliggenhet}</div>
+        <table style="font-size:12px;width:100%;border-collapse:collapse">
+          <tr><td style="color:#888;padding:2px 0">Annonsert:</td><td style="font-weight:600">${l.pris?l.pris.toLocaleString('no')+' kr':'–'}</td></tr>
+          <tr><td style="color:#888;padding:2px 0">All-in est.:</td><td style="font-weight:600;color:${l.mine?'#BA7517':l.allin<16000?'#0f6e56':l.allin>20000?'#a32d2d':'#BA7517'}">${l.allin?l.allin.toLocaleString('no')+' kr':'–'}</td></tr>
+          <tr><td style="color:#888;padding:2px 0">Størrelse:</td><td>${l.m2??'–'} m² · ${l.sov??'–'} sov</td></tr>
+          <tr><td style="color:#888;padding:2px 0">Type:</td><td>${l.type}</td></tr>
+          <tr><td style="color:#888;padding:2px 0">Møblert:</td><td>${mob}</td></tr>
+          <tr><td style="color:#888;padding:2px 0">Strøm inkl.:</td><td>${strom}</td></tr>
+          <tr><td style="color:#888;padding:2px 0">Nett inkl.:</td><td>${nett}</td></tr>
+          <tr><td style="color:#888;padding:2px 0">Renovert:</td><td>${l.renovert||'–'}</td></tr>
+        </table>
+        ${l.url?`<div style="margin-top:8px"><a href="${l.url}" target="_blank" style="color:#1a73e8;font-size:12px">Åpne annonse ↗</a></div>`:''}
+      </div>`);
+    mapMarkers.push(marker);
+  });
+}
+
+// ============================================================
+// CHARTS
+// ============================================================
+let cS,cB,cK,cSov,cHist;
+
 function renderCharts(){
   const data=getFiltered();
   const mkt=data.filter(l=>!l.mine&&l.m2);
@@ -356,17 +586,16 @@ function renderCharts(){
     data:{datasets:[
       {label:'Leilighet',data:leil.map(l=>({x:l.m2,y:l.allin,label:l.adr})),backgroundColor:'#1a73e888',pointRadius:8,pointHoverRadius:11},
       {label:'Sokkel/Hybel',data:sokk.map(l=>({x:l.m2,y:l.allin,label:l.adr})),backgroundColor:'#0f6e5688',pointRadius:8,pointHoverRadius:11},
-      {label:'Ditt objekt',data:[{x:55,y:14000,label:'Ditt objekt'}],backgroundColor:'#BA7517',pointRadius:12,pointHoverRadius:14,pointStyle:'triangle'},
-      {label:'Anbefalt',data:[{x:55,y:15500,label:'Anbefalt: 15 500 kr'}],backgroundColor:'#3B6D11',pointRadius:12,pointHoverRadius:14,pointStyle:'triangle'},
+      {label:'Ditt',data:[{x:55,y:14000,label:'Ditt objekt'}],backgroundColor:'#BA7517',pointRadius:12,pointHoverRadius:14,pointStyle:'triangle'},
+      {label:'Anbefalt',data:[{x:55,y:16000,label:'Anbefalt: 16 000 kr'}],backgroundColor:'#3B6D11',pointRadius:12,pointHoverRadius:14,pointStyle:'triangle'},
     ]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw.label}: ${c.raw.y.toLocaleString('no')} kr · ${c.raw.x} m²`}}},
-      scales:{x:{title:{display:true,text:'Størrelse (m²)',font:{size:12}},min:30,max:95,grid:{color:'rgba(0,0,0,.05)'}},
-              y:{title:{display:true,text:'All-in (kr/mnd)',font:{size:12}},min:11000,max:24000,ticks:{callback:v=>v.toLocaleString('no')},grid:{color:'rgba(0,0,0,.05)'}}}}
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw.label}: ${c.raw.y.toLocaleString('no')} kr · ${c.raw.x} m²`}}},
+      scales:{x:{title:{display:true,text:'Størrelse (m²)'},min:25,max:130,grid:{color:'rgba(0,0,0,.05)'}},
+              y:{title:{display:true,text:'All-in (kr/mnd)'},min:10000,max:30000,ticks:{callback:v=>v.toLocaleString('no')},grid:{color:'rgba(0,0,0,.05)'}}}}
   });
 
   const bd=[...data].filter(l=>l.m2);
-  const bl=bd.map(l=>l.mine?'Ditt objekt':l.adr.replace('veien','v.').replace('gata','gt.').replace('gate','gt.').replace('Gate','gt.'));
+  const bl=bd.map(l=>l.mine?'Ditt':l.adr.split(' ').slice(0,2).join(' '));
   if(cB)cB.destroy();
   cB=new Chart(document.getElementById('c-bar').getContext('2d'),{
     type:'bar',
@@ -374,28 +603,123 @@ function renderCharts(){
       {label:'Annonsert',data:bd.map(l=>l.pris),backgroundColor:'#85B7EB',borderRadius:3},
       {label:'All-in',data:bd.map(l=>l.allin),backgroundColor:bd.map(l=>l.mine?'#BA7517':'#1D9E75'),borderRadius:3},
     ]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.raw.toLocaleString('no')} kr`}}},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.raw.toLocaleString('no')} kr`}}},
       scales:{x:{ticks:{font:{size:10},maxRotation:40},grid:{display:false}},y:{ticks:{callback:v=>v.toLocaleString('no'),font:{size:11}},grid:{color:'rgba(0,0,0,.05)'}}}}
   });
 
   const kd=[...data].filter(l=>l.m2&&l.kvm).sort((a,b)=>a.kvm-b.kvm);
-  const avg2s=data.filter(l=>!l.mine&&l.sov===2&&l.kvm);
-  const avgKvm=avg2s.length?Math.round(avg2s.reduce((a,b)=>a+b.kvm,0)/avg2s.length):280;
+  const avg2=kd.filter(l=>!l.mine);
+  const avgKvm=avg2.length?Math.round(avg2.reduce((a,b)=>a+b.kvm,0)/avg2.length):280;
   if(cK)cK.destroy();
   cK=new Chart(document.getElementById('c-kvm').getContext('2d'),{
     type:'bar',
-    data:{labels:kd.map(l=>l.mine?'Ditt objekt':l.adr.split(' ').slice(0,2).join(' ')),
+    data:{labels:kd.map(l=>l.mine?'Ditt':l.adr.split(' ').slice(0,2).join(' ')),
       datasets:[{data:kd.map(l=>l.kvm),backgroundColor:kd.map(l=>l.mine?'#BA7517':l.kvm<avgKvm?'#1D9E75':'#E24B4A'),borderRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw} kr/m²`}}},
-      scales:{x:{ticks:{font:{size:11},maxRotation:35},grid:{display:false}},
-              y:{ticks:{callback:v=>v+' kr',font:{size:11}},grid:{color:'rgba(0,0,0,.05)'}}}}
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw} kr/m²`}}},
+      scales:{x:{ticks:{font:{size:10},maxRotation:35},grid:{display:false}},y:{ticks:{callback:v=>v+' kr',font:{size:11}},grid:{color:'rgba(0,0,0,.05)'}}}}
+  });
+
+  const sovCounts=[0,1,2,3,4].map(s=>D.filter(l=>!l.mine&&l.sov===s).length);
+  const sovLabels=['0 sov','1 sov','2 sov','3 sov','4+ sov'];
+  if(cSov)cSov.destroy();
+  cSov=new Chart(document.getElementById('c-sov').getContext('2d'),{
+    type:'bar',
+    data:{labels:sovLabels,datasets:[{data:sovCounts,backgroundColor:['#D3D1C7','#85B7EB','#1D9E75','#FAC775','#E24B4A'],borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false}},y:{ticks:{stepSize:1},grid:{color:'rgba(0,0,0,.05)'}}}}
   });
 }
 
+// ============================================================
+// HISTORY
+// ============================================================
+function renderHistory(){
+  const tbody=document.getElementById('history-tbody');
+  const sorted=[...historyData].sort((a,b)=>new Date(b.dato)-new Date(a.dato));
+  tbody.innerHTML=sorted.map((h,i)=>{
+    const prev=sorted.slice(i+1).find(p=>p.adr===h.adr);
+    let delta='';
+    if(prev){
+      const diff=h.pris-prev.pris;
+      if(diff>0)delta=`<span class="price-up">+${diff.toLocaleString('no')} kr ↑</span>`;
+      else if(diff<0)delta=`<span class="price-down">${diff.toLocaleString('no')} kr ↓</span>`;
+      else delta='<span style="color:#aaa">–</span>';
+    }
+    return `<tr>
+      <td style="color:var(--muted)">${h.dato}</td>
+      <td><strong>${h.adr}</strong></td>
+      <td>${h.pris.toLocaleString('no')} kr</td>
+      <td>${delta}</td>
+      <td style="color:var(--muted)">${h.note||'–'}</td>
+    </tr>`;
+  }).join('');
+  renderHistoryChart();
+}
+
+function renderHistoryChart(){
+  const adrs=[...new Set(historyData.map(h=>h.adr))];
+  const colors=['#BA7517','#1a73e8','#0f6e56','#a32d2d','#e68a00','#3B6D11'];
+  const allDates=[...new Set(historyData.map(h=>h.dato))].sort();
+  const datasets=adrs.map((adr,i)=>({
+    label:adr,
+    data:allDates.map(d=>{
+      const entry=historyData.filter(h=>h.adr===adr&&h.dato===d).pop();
+      return entry?entry.pris:null;
+    }),
+    borderColor:colors[i%colors.length],
+    backgroundColor:colors[i%colors.length]+'22',
+    tension:.3, spanGaps:true, pointRadius:5
+  }));
+  if(cHist)cHist.destroy();
+  cHist=new Chart(document.getElementById('c-history').getContext('2d'),{
+    type:'line',
+    data:{labels:allDates,datasets},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.raw?c.raw.toLocaleString('no')+' kr':'–'}`}}},
+      scales:{y:{ticks:{callback:v=>v.toLocaleString('no')},grid:{color:'rgba(0,0,0,.05)'}},x:{grid:{color:'rgba(0,0,0,.05)'}}}}
+  });
+}
+
+function toggleAddHistory(){
+  const f=document.getElementById('add-history-form');
+  f.style.display=f.style.display==='grid'?'none':'grid';
+  if(f.style.display==='grid') document.getElementById('h-dato').value=new Date().toISOString().split('T')[0];
+}
+
+function addHistory(){
+  const adr=document.getElementById('h-adr').value.trim();
+  const dato=document.getElementById('h-dato').value;
+  const pris=parseInt(document.getElementById('h-pris').value);
+  const note=document.getElementById('h-note').value.trim();
+  if(!adr||!dato||!pris){alert('Fyll inn adresse, dato og pris');return;}
+  historyData.push({dato,adr,pris,note});
+  localStorage.setItem('leiehistory',JSON.stringify(historyData));
+  ['h-adr','h-pris','h-note'].forEach(id=>document.getElementById(id).value='');
+  renderHistory();
+}
+
+// ============================================================
+// TABS
+// ============================================================
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+    btn.classList.add('active');
+    const id='tab-'+btn.dataset.tab;
+    document.getElementById(id).classList.add('active');
+    if(btn.dataset.tab==='kart'){setTimeout(()=>{renderMap();map&&map.invalidateSize();},100);}
+    if(btn.dataset.tab==='grafer')renderCharts();
+    if(btn.dataset.tab==='historikk')renderHistory();
+  });
+});
+
+// ============================================================
+// INIT
+// ============================================================
 renderTable();
 renderCharts();
+renderHistory();
 </script>
 </body>
 </html>

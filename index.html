@@ -215,6 +215,14 @@ footer{text-align:center;font-size:12px;color:var(--muted);padding:20px 0}
       <button class="chip" data-val="finn.no">finn.no</button>
       <button class="chip" data-val="hybel.no">hybel.no</button>
     </div>
+    <div class="sep"></div>
+    <span class="f-label">Pris/person:</span>
+    <div class="chip-group" id="fg-ppp">
+      <button class="chip active" data-val="Alle">Alle</button>
+      <button class="chip" data-val="u8">Under 8 000</button>
+      <button class="chip" data-val="8-12">8 000–12 000</button>
+      <button class="chip" data-val="o12">Over 12 000</button>
+    </div>
   </div>
   <div class="table-wrap">
     <table>
@@ -232,6 +240,7 @@ footer{text-align:center;font-size:12px;color:var(--muted);padding:20px 0}
         <th data-col="kvm">kr/m² <span class="sa">↕</span></th>
         <th data-col="renovert">Renovert</th>
         <th data-col="beliggenhet">Beliggenhet</th>
+        <th data-col="ppp">Kr/person <span class="sa">↕</span></th>
         <th data-col="kilde">Kilde <span class="sa">↕</span></th>
         <th>Annonse</th>
       </tr></thead>
@@ -356,38 +365,76 @@ footer{text-align:center;font-size:12px;color:var(--muted);padding:20px 0}
 // DATA
 // ============================================================
 const D = [
-  {mine:true, adr:'Tobienborgveien 5', type:'Sokkelleilighet', m2:55, sov:2, pris:14000, strom:true, nett:true, moblert:'Ja', parkering:'Ja', allin:14000, renovert:'2015 (bygd 1923)', beliggenhet:'Lund · 3 min buss', kilde:'–', url:'https://www.finn.no/realestate/homes/ad.html?finnkode=377158590', lat:58.1612, lng:7.9978},
-  {adr:'Brinken 12', type:'Sokkelleilighet', m2:55, sov:2, pris:12900, strom:false, nett:true, moblert:'Delvis', parkering:'Ja', allin:14900, renovert:'2020', beliggenhet:'Lund · 5 min UiA', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=444754409', lat:58.1583, lng:7.9951},
-  {adr:'Dronningens Gate 24A', type:'Leilighet', m2:80, sov:2, pris:14000, strom:false, nett:false, moblert:'Delvis', parkering:'Nei', allin:16500, renovert:'–', beliggenhet:'Sentrum · 4. etg', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=451662621', lat:58.1467, lng:7.9953},
-  {adr:'Flaten 16', type:'Leilighet', m2:60, sov:1, pris:13500, strom:false, nett:false, moblert:'Ja', parkering:'Ja', allin:16000, renovert:'2026', beliggenhet:'Lund · nær UiA', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=150387629', lat:58.1596, lng:7.9945},
-  {adr:'Elvegata 6', type:'Leilighet', m2:60, sov:2, pris:16000, strom:false, nett:true, moblert:'Ja', parkering:'Nei', allin:18000, renovert:'2026', beliggenhet:'Sentrum · 2. etg', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=458163537', lat:58.1452, lng:7.9932},
-  {adr:'Frydenlundsveien 20C', type:'Leilighet', m2:79, sov:2, pris:17000, strom:false, nett:true, moblert:'Delvis', parkering:'Nei', allin:19000, renovert:'–', beliggenhet:'Lund · 12 min UiA · 3. etg', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=457825787', lat:58.1559, lng:7.9934},
-  {adr:'Holbergs Gate 64', type:'Leilighet', m2:56, sov:2, pris:18000, strom:false, nett:true, moblert:'Delvis', parkering:'Nei', allin:20000, renovert:'2026', beliggenhet:'Posebyen · 4. etg', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=458060201', lat:58.1478, lng:7.9961},
-  {adr:'Freyasdalsveien 33', type:'Leilighet', m2:61, sov:2, pris:18500, strom:false, nett:false, moblert:'Ja', parkering:'Ja', allin:21000, renovert:'–', beliggenhet:'Lund · nær UiA · 2. etg', kilde:'finn.no + hybel.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=412774834', lat:58.1571, lng:7.9939},
-  {adr:'Dronningens Gate 34A', type:'Leilighet', m2:60, sov:2, pris:18900, strom:false, nett:true, moblert:'Nei', parkering:'Nei', allin:20400, renovert:'2018', beliggenhet:'Sentrum · 1. etg · 2018-bygg', kilde:'hybel.no', url:'https://hybel.no/bolig/238959/leilighet-3-roms-dronningens-gate-34a-kristiansand/', lat:58.1471, lng:7.9957},
-  {adr:'Kongens Gate 45', type:'Leilighet', m2:52, sov:1, pris:13250, strom:false, nett:false, moblert:'Ja', parkering:'Nei', allin:15800, renovert:'1899/renov', beliggenhet:'Sentrum · 1. etg', kilde:'hybel.no', url:'https://hybel.no/bolig/249996/leilighet-2-roms-kongens-gate-45-kristiansand-s/', lat:58.1463, lng:7.9972},
-  {adr:'Brinken 36', type:'Hybel', m2:68, sov:2, pris:19500, strom:true, nett:true, moblert:'Ja', parkering:'Ja', allin:19500, renovert:'–', beliggenhet:'Lund · 1 km UiA · 1. etg', kilde:'hybel.no', url:'https://hybel.no/bolig/251069/hybel-3-roms-brinken-36-kristiansand/', lat:58.1579, lng:7.9948},
-  {adr:'Kristian Ivs Gate 21', type:'Leilighet', m2:36, sov:1, pris:15000, strom:false, nett:true, moblert:'Ja', parkering:'Nei', allin:16500, renovert:'2021', beliggenhet:'Sentrum · 4. etg · utsikt', kilde:'hybel.no', url:'https://hybel.no/bolig/298605/leilighet-2-roms-kristian-ivs-gate-21-kristiansand/', lat:58.1474, lng:7.9984},
-  {adr:'Kirkegata 7B', type:'Leilighet', m2:70, sov:3, pris:19000, strom:false, nett:false, moblert:'Ja', parkering:'Nei', allin:21450, renovert:'–', beliggenhet:'Sentrum', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=457138583', lat:58.1458, lng:7.9948},
-  {adr:'Ringlebekk Terrasse 21', type:'Leilighet', m2:80, sov:1, pris:13000, strom:false, nett:false, moblert:'Nei', parkering:'Ja', allin:15450, renovert:'–', beliggenhet:'Sødal · nær UiA', kilde:'finn.no', url:'', lat:58.1637, lng:7.9891},
-  {adr:'Markens Gate 6 (4sov)', type:'Leilighet', m2:120, sov:4, pris:23900, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:26350, renovert:'–', beliggenhet:'Sentrum', kilde:'hybel.no', url:'', lat:58.1456, lng:7.9964},
-  {adr:'Smiedalen 27E', type:'Leilighet', m2:97, sov:4, pris:25000, strom:false, nett:false, moblert:'Nei', parkering:'Ja', allin:27450, renovert:'–', beliggenhet:'Nær UiA', kilde:'hybel.no', url:'', lat:58.1622, lng:7.9902},
-  {adr:'Torridalsveien 48 (4sov)', type:'Leilighet', m2:88, sov:4, pris:26000, strom:false, nett:false, moblert:'Nei', parkering:'Ja', allin:28450, renovert:'–', beliggenhet:'Nær UiA', kilde:'hybel.no', url:'', lat:58.1608, lng:7.9918},
-  {adr:'Holbergs Gate 43', type:'Leilighet', m2:86, sov:2, pris:19000, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:21450, renovert:'–', beliggenhet:'Posebyen/Kvadraturen', kilde:'hybel.no', url:'', lat:58.1481, lng:7.9953},
+  {mine:true, adr:'Tobienborgveien 5', type:'Sokkelleilighet', m2:55, sov:2, pris:14000, strom:true, nett:true, moblert:'Ja', parkering:'Ja', allin:14000, renovert:'2015 (bygd 1923)', beliggenhet:'Lund · 3 min buss', kilde:'–', url:'https://www.finn.no/realestate/homes/ad.html?finnkode=377158590', lat:58.1521778, lng:8.0171464},
+  {adr:'Brinken 12', type:'Sokkelleilighet', m2:55, sov:2, pris:12900, strom:false, nett:true, moblert:'Delvis', parkering:'Ja', allin:14900, renovert:'2020', beliggenhet:'Lund · 5 min UiA', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=444754409', lat:58.165534, lng:7.995175},
+  {adr:'Dronningens Gate 24A', type:'Leilighet', m2:80, sov:2, pris:14000, strom:false, nett:false, moblert:'Delvis', parkering:'Nei', allin:16500, renovert:'–', beliggenhet:'Sentrum · 4. etg', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=451662621', lat:58.1451946, lng:7.9976936},
+  {adr:'Flaten 16', type:'Leilighet', m2:60, sov:1, pris:13500, strom:false, nett:false, moblert:'Ja', parkering:'Ja', allin:16000, renovert:'2026', beliggenhet:'Lund · nær UiA', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=150387629', lat:58.1570759, lng:8.0042992},
+  {adr:'Elvegata 6', type:'Leilighet', m2:60, sov:2, pris:16000, strom:false, nett:true, moblert:'Ja', parkering:'Nei', allin:18000, renovert:'2026', beliggenhet:'Sentrum · 2. etg', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=458163537', lat:58.1490574, lng:8.0036813},
+  {adr:'Frydenlundsveien 20C', type:'Leilighet', m2:79, sov:2, pris:17000, strom:false, nett:true, moblert:'Delvis', parkering:'Nei', allin:19000, renovert:'–', beliggenhet:'Lund · 12 min UiA · 3. etg', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=457825787', lat:58.1545859, lng:8.0112854},
+  {adr:'Holbergs Gate 64', type:'Leilighet', m2:56, sov:2, pris:18000, strom:false, nett:true, moblert:'Delvis', parkering:'Nei', allin:20000, renovert:'2026', beliggenhet:'Posebyen · 4. etg', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=458060201', lat:58.1500962, lng:7.9949024},
+  {adr:'Freyasdalsveien 33', type:'Leilighet', m2:61, sov:2, pris:18500, strom:false, nett:false, moblert:'Ja', parkering:'Ja', allin:21000, renovert:'–', beliggenhet:'Lund · nær UiA · 2. etg', kilde:'finn.no + hybel.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=412774834', lat:58.153094, lng:8.01864},
+  {adr:'Dronningens Gate 34A', type:'Leilighet', m2:60, sov:2, pris:18900, strom:false, nett:true, moblert:'Nei', parkering:'Nei', allin:20400, renovert:'2018', beliggenhet:'Sentrum · 1. etg · 2018-bygg', kilde:'hybel.no', url:'https://hybel.no/bolig/238959/leilighet-3-roms-dronningens-gate-34a-kristiansand/', lat:58.1457595, lng:7.9984262},
+  {adr:'Kongens Gate 45', type:'Leilighet', m2:52, sov:1, pris:13250, strom:false, nett:false, moblert:'Ja', parkering:'Nei', allin:15800, renovert:'1899/renov', beliggenhet:'Sentrum · 1. etg', kilde:'hybel.no', url:'https://hybel.no/bolig/249996/leilighet-2-roms-kongens-gate-45-kristiansand-s/', lat:58.146712, lng:8.001652},
+  {adr:'Brinken 36', type:'Hybel', m2:68, sov:2, pris:19500, strom:true, nett:true, moblert:'Ja', parkering:'Ja', allin:19500, renovert:'–', beliggenhet:'Lund · 1 km UiA · 1. etg', kilde:'hybel.no', url:'https://hybel.no/bolig/251069/hybel-3-roms-brinken-36-kristiansand/', lat:58.1672403, lng:7.9912089},
+  {adr:'Kristian Ivs Gate 21', type:'Leilighet', m2:36, sov:1, pris:15000, strom:false, nett:true, moblert:'Ja', parkering:'Nei', allin:16500, renovert:'2021', beliggenhet:'Sentrum · 4. etg · utsikt', kilde:'hybel.no', url:'https://hybel.no/bolig/298605/leilighet-2-roms-kristian-ivs-gate-21-kristiansand/', lat:58.147661, lng:7.990633},
+  {adr:'Kirkegata 7B', type:'Leilighet', m2:70, sov:3, pris:19000, strom:false, nett:false, moblert:'Ja', parkering:'Nei', allin:21450, renovert:'–', beliggenhet:'Sentrum', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=457138583', lat:58.1450493, lng:7.9973473},
+  {adr:'Ringlebekk Terrasse 21', type:'Leilighet', m2:80, sov:1, pris:13000, strom:false, nett:false, moblert:'Nei', parkering:'Ja', allin:15450, renovert:'–', beliggenhet:'Sødal · nær UiA', kilde:'finn.no', url:'', lat:58.169384, lng:7.985933},
+  {adr:'Markens Gate 6 (4sov)', type:'Leilighet', m2:120, sov:4, pris:23900, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:26350, renovert:'–', beliggenhet:'Sentrum', kilde:'hybel.no', url:'', lat:58.1441772, lng:7.9962412},
+  {adr:'Smiedalen 27E', type:'Leilighet', m2:97, sov:4, pris:25000, strom:false, nett:false, moblert:'Nei', parkering:'Ja', allin:27450, renovert:'–', beliggenhet:'Nær UiA', kilde:'hybel.no', url:'', lat:58.1709365, lng:7.9848668},
+  {adr:'Torridalsveien 48 (4sov)', type:'Leilighet', m2:88, sov:4, pris:26000, strom:false, nett:false, moblert:'Nei', parkering:'Ja', allin:28450, renovert:'–', beliggenhet:'Nær UiA', kilde:'hybel.no', url:'', lat:58.1568099, lng:8.0006179},
+  {adr:'Holbergs Gate 43', type:'Leilighet', m2:86, sov:2, pris:19000, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:21450, renovert:'–', beliggenhet:'Posebyen/Kvadraturen', kilde:'hybel.no', url:'', lat:58.1494921, lng:7.9955501},
   // --- NYE OBJEKTER: 10 km radius, Lund/Gimlekollen/nærområde ---
-  {adr:'Bjørndalen allé 11', type:'Leilighet', m2:51, sov:1, pris:16500, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:18950, renovert:'2026 (ny)', beliggenhet:'Lund · ny bygning', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=391881359', lat:58.1578, lng:7.9943},
-  {adr:'Freyasdalsveien 56 (liten)', type:'Leilighet', m2:25, sov:1, pris:8200, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:10650, renovert:'–', beliggenhet:'Lund · nyere bygg', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=304916489', lat:58.1572, lng:7.9939},
-  {adr:'Freyasdalsveien 56 (4-roms)', type:'Leilighet', m2:85, sov:3, pris:16500, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:18950, renovert:'–', beliggenhet:'Lund · sentralt', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=147301732', lat:58.1572, lng:7.9941},
-  {adr:'Ringlebekkveien 6', type:'Leilighet', m2:null, sov:2, pris:16800, strom:false, nett:false, moblert:'Nei', parkering:'Ja', allin:19250, renovert:'2026 (ny)', beliggenhet:'Gimlekollen/Ringlebekk', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=528343', lat:58.1641, lng:7.9977},
-  {adr:'Urds vei 4A (rekkehus)', type:'Leilighet', m2:null, sov:5, pris:17900, strom:false, nett:false, moblert:'Nei', parkering:'Ja', allin:20350, renovert:'–', beliggenhet:'Lund · hage', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=457132992', lat:58.1568, lng:7.9947},
-  {adr:'Håkon den Godes Vei 14A', type:'Leilighet', m2:71, sov:3, pris:17490, strom:false, nett:false, moblert:'Nei', parkering:'Ja', allin:19940, renovert:'ny', beliggenhet:'Lund/Gimlekollen · EL-lader', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=399535626', lat:58.1623, lng:7.9985},
-  {adr:'Odderheistien 10', type:'Leilighet', m2:80, sov:2, pris:12000, strom:false, nett:false, moblert:'Delvis', parkering:'Ja', allin:14450, renovert:'–', beliggenhet:'Odderhei · rolig', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=74870077', lat:58.1601, lng:7.9872},
-  {adr:'Blyveien 2 (Tinnheia)', type:'Leilighet', m2:71, sov:2, pris:17000, strom:false, nett:true, moblert:'Nei', parkering:'Ja', allin:19000, renovert:'–', beliggenhet:'Tinnheia · parkering i kjeller', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=458021110', lat:58.1714, lng:8.0082},
-  {adr:'Gullveien 11 (Tinnheia)', type:'Leilighet', m2:51, sov:2, pris:15400, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:17850, renovert:'–', beliggenhet:'Tinnheia · panoramautsikt', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=456279255', lat:58.1709, lng:8.0078},
-  {adr:'Rødvingeveien 12 (Slettheia)', type:'Leilighet', m2:45, sov:1, pris:10500, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:12950, renovert:'–', beliggenhet:'Slettheia', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=233740774', lat:58.1668, lng:8.0143},
-  {adr:'Hellemyrbakken 20', type:'Leilighet', m2:90, sov:3, pris:17500, strom:false, nett:false, moblert:'Nei', parkering:'Ja', allin:19950, renovert:'–', beliggenhet:'Hellemyr · 2 balkonger · EL-lader', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=417950469', lat:58.1688, lng:8.0031}
+  {adr:'Bjørndalen allé 11', type:'Leilighet', m2:51, sov:1, pris:16500, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:18950, renovert:'2026 (ny)', beliggenhet:'Lund · ny bygning', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=391881359', lat:58.16341, lng:8.022136},
+  {adr:'Freyasdalsveien 56 (liten)', type:'Leilighet', m2:25, sov:1, pris:8200, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:10650, renovert:'–', beliggenhet:'Lund · nyere bygg', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=304916489', lat:58.1513632, lng:8.0195398},
+  {adr:'Freyasdalsveien 56 (4-roms)', type:'Leilighet', m2:85, sov:3, pris:16500, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:18950, renovert:'–', beliggenhet:'Lund · sentralt', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=147301732', lat:58.1513632, lng:8.0195398},
+  {adr:'Ringlebekkveien 6', type:'Leilighet', m2:null, sov:2, pris:16800, strom:false, nett:false, moblert:'Nei', parkering:'Ja', allin:19250, renovert:'2026 (ny)', beliggenhet:'Gimlekollen/Ringlebekk', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=528343', lat:58.168527, lng:7.987606},
+  {adr:'Urds vei 4A (rekkehus)', type:'Leilighet', m2:null, sov:5, pris:17900, strom:false, nett:false, moblert:'Nei', parkering:'Ja', allin:20350, renovert:'–', beliggenhet:'Lund · hage', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=457132992', lat:58.157346, lng:8.0229657},
+  {adr:'Håkon den Godes Vei 14A', type:'Leilighet', m2:71, sov:3, pris:17490, strom:false, nett:false, moblert:'Nei', parkering:'Ja', allin:19940, renovert:'ny', beliggenhet:'Lund/Gimlekollen · EL-lader', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=399535626', lat:58.163901, lng:8.03633},
+  {adr:'Odderheistien 10', type:'Leilighet', m2:80, sov:2, pris:12000, strom:false, nett:false, moblert:'Delvis', parkering:'Ja', allin:14450, renovert:'–', beliggenhet:'Odderhei · rolig', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=74870077', lat:58.1387781, lng:8.0833224},
+  {adr:'Blyveien 2 (Tinnheia)', type:'Leilighet', m2:71, sov:2, pris:17000, strom:false, nett:true, moblert:'Nei', parkering:'Ja', allin:19000, renovert:'–', beliggenhet:'Tinnheia · parkering i kjeller', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=458021110', lat:58.1443551, lng:7.9571087},
+  {adr:'Gullveien 11 (Tinnheia)', type:'Leilighet', m2:51, sov:2, pris:15400, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:17850, renovert:'–', beliggenhet:'Tinnheia · panoramautsikt', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=456279255', lat:58.145904, lng:7.9580626},
+  {adr:'Rødvingeveien 12 (Slettheia)', type:'Leilighet', m2:45, sov:1, pris:10500, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:12950, renovert:'–', beliggenhet:'Slettheia', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=233740774', lat:58.1338454, lng:7.9458864},
+  {adr:'Hellemyrbakken 20', type:'Leilighet', m2:90, sov:3, pris:17500, strom:false, nett:false, moblert:'Nei', parkering:'Ja', allin:19950, renovert:'–', beliggenhet:'Hellemyr · 2 balkonger · EL-lader', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=417950469', lat:58.1440273, lng:7.9430957},
+  // --- HYBLER: finn.no 5km radius fra Tobienborgveien 5 ---
+  {adr:'Knausveien 1', type:'Hybel', m2:40, sov:1, pris:8500, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:10950, renovert:'–', beliggenhet:'Gimlekollen · nær UiA', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=81904695', lat:58.1688255, lng:7.987928},
+  {adr:'Marikåpeveien 62', type:'Hybel', m2:36, sov:2, pris:9500, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:11950, renovert:'–', beliggenhet:'Randesund-retning', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=342583963', lat:58.186171, lng:8.043445},
+  {adr:'Lille Kartemyrvei 24', type:'Hybel', m2:45, sov:2, pris:12000, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:14450, renovert:'ny', beliggenhet:'Vest for sentrum', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=458189822', lat:58.152851, lng:7.932278},
+  {adr:'Steinkleiva 8', type:'Hybel', m2:40, sov:1, pris:9000, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:11450, renovert:'–', beliggenhet:'Gimlekollen', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=458240999', lat:58.1516762, lng:8.0103244},
+  {adr:'Soleieveien 49', type:'Hybel', m2:55, sov:1, pris:13000, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:15450, renovert:'–', beliggenhet:'Justneshalvøya', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=356222175', lat:58.18731, lng:8.045669},
+  {adr:'Hanneviktoppen 3', type:'Hybel', m2:37, sov:1, pris:10000, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:12450, renovert:'nyoppusset', beliggenhet:'Hannevik/vest', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=458072127', lat:58.139647, lng:7.959619},
+  {adr:'Skippergata 67', type:'Hybel', m2:15, sov:1, pris:6500, strom:false, nett:false, moblert:'Delvis', parkering:'Nei', allin:8950, renovert:'nyoppusset', beliggenhet:'Sentrum · jentekollektiv', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=338725149', lat:58.1483844, lng:7.9955642},
+  {adr:'Malmveien 10A', type:'Hybel', m2:30, sov:1, pris:10500, strom:false, nett:false, moblert:'Nei', parkering:'Ja', allin:12950, renovert:'ny', beliggenhet:'Vågsbygd · terrasse', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=457908212', lat:58.149441, lng:7.955409},
+  {adr:'Kokleheia 12B', type:'Hybel', m2:47, sov:2, pris:13000, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:15450, renovert:'ny', beliggenhet:'Gimlekollen · 700m fra UiA', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=213854200', lat:58.164492, lng:7.993972},
+  {adr:'Skippergata 3 (Studentia)', type:'Hybel', m2:17, sov:0, pris:7100, strom:false, nett:false, moblert:'Ja', parkering:'Nei', allin:9550, renovert:'–', beliggenhet:'Sentrum · høy standard', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=306372134', lat:58.145677, lng:7.990715},
+  {adr:'Kongens Gate 15A', type:'Hybel', m2:27, sov:0, pris:10000, strom:false, nett:true, moblert:'Nei', parkering:'Nei', allin:11800, renovert:'–', beliggenhet:'Kvadraturen · nett+oppv. inkl.', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=456397276', lat:58.1443348, lng:7.9973008},
+  {adr:'Bergtoras Vei 24', type:'Hybel', m2:35, sov:1, pris:8000, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:10450, renovert:'–', beliggenhet:'Gimlekollen · nær UiA', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=457491032', lat:58.1696628, lng:8.02982},
+  {adr:'Titanveien', type:'Hybel', m2:28, sov:1, pris:8000, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:10450, renovert:'–', beliggenhet:'Vågsbygd', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=457222013', lat:58.1428688, lng:7.9551535},
+  {adr:'Kjelleviktoppen 44', type:'Hybel', m2:65, sov:1, pris:9000, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:11450, renovert:'–', beliggenhet:'Søm', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=325842100', lat:58.1414768, lng:8.056827},
+  {adr:'Jørgen Moes Gate 3', type:'Hybel', m2:25, sov:1, pris:8000, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:10450, renovert:'–', beliggenhet:'Grim · sentral', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=454181101', lat:58.1485879, lng:7.9770641},
+  {adr:'Bosmyrkollen 9', type:'Hybel', m2:45, sov:1, pris:9000, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:11450, renovert:'nyrenov.', beliggenhet:'Sør for sentrum', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=313863958', lat:58.1287589, lng:7.9458236},
+  {adr:'Bergtoras Vei 48', type:'Hybel', m2:50, sov:2, pris:12000, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:14450, renovert:'–', beliggenhet:'Gimlekollen', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=435449758', lat:58.1684157, lng:8.0253241},
+  {adr:'Major Laudalsvei 13A', type:'Hybel', m2:50, sov:2, pris:14499, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:16949, renovert:'ny', beliggenhet:'Gimlevang · nær UiA', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=417858871', lat:58.1620, lng:8.0190},
+  {adr:'Hamreheia 88', type:'Hybel', m2:20, sov:1, pris:8400, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:10850, renovert:'–', beliggenhet:'Gimlekollen', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=405773034', lat:58.1488225, lng:8.0162727},
+  {adr:'Kongensgate 53C', type:'Hybel', m2:18, sov:0, pris:7800, strom:true, nett:true, moblert:'Ja', parkering:'Nei', allin:7800, renovert:'–', beliggenhet:'Sentrum · ALT inkl.', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=244365462', lat:58.1468, lng:8.0010},
+  {adr:'Trollbærveien 39', type:'Hybel', m2:22, sov:1, pris:10000, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:12450, renovert:'–', beliggenhet:'Justneshalvøya · terrasse', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=456722892', lat:58.187698, lng:8.043581},
+  {adr:'Gimleveien 10D', type:'Hybel', m2:99, sov:4, pris:22000, strom:false, nett:false, moblert:'Ja', parkering:'Nei', allin:24450, renovert:'–', beliggenhet:'Lund · møblert 4 sov', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=435629929', lat:58.1568218, lng:8.0011612},
+  {adr:'Peder Claussøns Gate 10', type:'Hybel', m2:65, sov:2, pris:14000, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:16450, renovert:'–', beliggenhet:'Midt mellom UiA og sentrum', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=352403402', lat:58.1549683, lng:8.0071015},
+  {adr:'Hånestangen 85', type:'Hybel', m2:45, sov:1, pris:9900, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:12350, renovert:'–', beliggenhet:'Hånes · sjøutsikt', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=411105504', lat:58.172623, lng:8.075379},
+  {adr:'Kuholmsveien 55A', type:'Hybel', m2:90, sov:3, pris:19000, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:21450, renovert:'ny', beliggenhet:'Lund/Kuholmen', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=429338171', lat:58.1472905, lng:8.0172559},
+  {adr:'Ingebjørgs Vei 8', type:'Hybel', m2:25, sov:0, pris:8500, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:10950, renovert:'ny', beliggenhet:'Fagerholt', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=456064304', lat:58.1805067, lng:8.0384182},
+  {adr:'Torridalsveien 75', type:'Hybel', m2:85, sov:3, pris:20700, strom:true, nett:true, moblert:'Ja', parkering:'Nei', allin:20700, renovert:'–', beliggenhet:'Nær UiA · ALT inkl. · 6 900 kr/sov × 3', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=455999816', lat:58.1592637, lng:7.9955984},
+  {adr:'Kirkegata 7B (liten)', type:'Hybel', m2:22, sov:0, pris:8000, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:10450, renovert:'–', beliggenhet:'Sentrum · sjarmerende', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=444803070', lat:58.1450493, lng:7.9973473},
+  {adr:'Brinken 36C', type:'Hybel', m2:68, sov:3, pris:19500, strom:true, nett:true, moblert:'Ja', parkering:'Nei', allin:19500, renovert:'–', beliggenhet:'Lund · nær UiA · ALT inkl.', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=213740351', lat:58.167118, lng:7.991602},
+  {adr:'Kongsgård Allé 29', type:'Hybel', m2:47, sov:2, pris:14000, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:16450, renovert:'–', beliggenhet:'Lund · ledig 01.06', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=313733252', lat:58.156296, lng:8.016263},
+  {adr:'Dvergsnesåsen 11', type:'Hybel', m2:32, sov:1, pris:11000, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:13450, renovert:'ny', beliggenhet:'Dvergsnes', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=449416754', lat:58.129294, lng:8.068858},
+  {adr:'Andreas Kjærs Vei 50', type:'Hybel', m2:45, sov:2, pris:12500, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:14950, renovert:'–', beliggenhet:'Gimlekollen', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=413355489', lat:58.157473, lng:7.989667},
+  {adr:'Harald Gilles Vei 17B', type:'Hybel', m2:30, sov:1, pris:10000, strom:true, nett:true, moblert:'Ja', parkering:'Ja', allin:10000, renovert:'–', beliggenhet:'Fagerholt · ALT inkl.', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=445573263', lat:58.1796415, lng:8.0402258},
+  {adr:'Vågsbygdveien 43', type:'Hybel', m2:60, sov:1, pris:8000, strom:false, nett:false, moblert:'Nei', parkering:'Nei', allin:10450, renovert:'–', beliggenhet:'Vågsbygd', kilde:'finn.no', url:'https://www.finn.no/realestate/lettings/ad.html?finnkode=207251697', lat:58.1219802, lng:7.9592633}
 ];
-D.forEach(l=>{l.kvm=l.m2?Math.round(l.allin/l.m2):null});
+D.forEach(l=>{
+  l.kvm=l.m2?Math.round(l.allin/l.m2):null;
+  l.ppp=Math.round(l.pris/Math.max(l.sov||0,1));
+});
 
 // ============================================================
 // STATE
@@ -421,6 +468,12 @@ function getFiltered(){
     }
     if(filters.moblert!=='Alle'&&l.moblert!==filters.moblert)return false;
     if(filters.kilde!=='Alle'&&!l.kilde.includes(filters.kilde))return false;
+    if(filters.ppp!=='Alle'){
+      const p=l.ppp;
+      if(filters.ppp==='u8'&&(!p||p>=8000))return false;
+      if(filters.ppp==='8-12'&&(!p||p<8000||p>12000))return false;
+      if(filters.ppp==='o12'&&(!p||p<=12000))return false;
+    }
     return true;
   });
 }
@@ -461,6 +514,7 @@ function renderTable(){
       <td>${l.kvm?l.kvm.toLocaleString('no')+' kr':'–'}</td>
       <td style="font-size:12px;color:var(--muted)">${l.renovert||'–'}</td>
       <td style="font-size:12px;color:var(--muted)">${l.beliggenhet}</td>
+      <td style="font-weight:500;color:${l.mine?'var(--accent)':l.ppp&&l.ppp<8000?'var(--green)':l.ppp&&l.ppp>12000?'var(--red)':'inherit'}">${l.ppp?l.ppp.toLocaleString('no')+' kr':'–'}</td>
       <td>${l.kilde!=='–'?`<span class="ktag">${l.kilde}</span>`:'–'}</td>
       <td>${l.url?`<a class="al" href="${l.url}" target="_blank">↗</a>`:'–'}</td>
     </tr>`).join('');
@@ -497,7 +551,7 @@ document.getElementById('thead').addEventListener('click',e=>{
 });
 
 // Chips
-['fg-type','fg-sov','fg-moblert','fg-kilde'].forEach(id=>{
+['fg-type','fg-sov','fg-moblert','fg-kilde','fg-ppp'].forEach(id=>{
   document.getElementById(id).addEventListener('click',e=>{
     const b=e.target.closest('.chip'); if(!b)return;
     e.currentTarget.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
